@@ -92,6 +92,7 @@ obj_t **load_3ds_objs(char *fname) {
 }
 
 void free_obj(obj_t *o) {
+    if(!o) return;
     free(o);
 }
 
