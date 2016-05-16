@@ -1,4 +1,4 @@
-#include "lib3ds.h"
+#include "threedee.h"
 
 static size_t get_fsize(FILE *f) {
     fseek(f, 0L, SEEK_END);

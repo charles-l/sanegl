@@ -1,6 +1,6 @@
 // test to make sure the loader works
 #include <GL/glut.h>
-#include "lib3ds.h"
+#include "threedee.h"
 
 void init(void)
 {
