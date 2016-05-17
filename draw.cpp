@@ -7,7 +7,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
-using namespace glm;
+#include <glm/gtx/transform.hpp>
 #define ENSURE(m, e) if(!(m)) {fprintf(stderr, #m ": %s\n", e); return NULL;}
 
 typedef struct {
