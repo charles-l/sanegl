@@ -15,8 +15,28 @@ int main() {
     };
     GLuint vb = create_buf(x, 9 * sizeof(float));
     GLuint vb2 = create_buf(y, 9 * sizeof(float));
+
+    // TODO: move to files or something
+    const char *v_shader = "#version 330 core \n\
+                            layout(location = 0) in vec3 vertexPosition_modelspace;\
+                            void main() { \
+                                gl_Position.xyz = vertexPosition_modelspace; \
+                                    gl_Position.w = 1.0; \
+                            }";
+
+    const char *f_shader = "#version 330 \n\
+                            out vec3 color; \
+                            void main() { \
+                                color = vec3(1.0, 1.0, 1.0); \
+                            }";
+
+    GLuint v = load_shader(v_shader, GL_VERTEX_SHADER);
+    GLuint f = load_shader(f_shader, GL_FRAGMENT_SHADER);
+    GLuint p = make_program(v, f);
+
     do {
-        clear();
+        clear(0.0, 1.0, 0.0);
+        glUseProgram(p);
         draw_buf(vb2, 3);
         draw_buf(vb, 3);
         render_frame(w);

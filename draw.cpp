@@ -1,5 +1,9 @@
+// You may think this is C++ a file, but let's pretend C++ isn't a thing.
+// WELCOME TO C WORLD BABY :3
+
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -10,6 +14,55 @@ typedef struct {
     GLuint vb;
     // attrib array maybe?
 } obj_t;
+
+static void show_info_log( // da frick is this ugly thing you ask? welcome to opengl error reporting >:)
+        GLuint object,
+        PFNGLGETSHADERIVPROC glGet__iv,
+        PFNGLGETSHADERINFOLOGPROC glGet__InfoLog
+        )
+{
+    GLint log_length;
+    char *log;
+
+    glGet__iv(object, GL_INFO_LOG_LENGTH, &log_length);
+    log = (char *) malloc(log_length);
+    glGet__InfoLog(object, log_length, NULL, log);
+    fprintf(stderr, "%s", log);
+    free(log);
+}
+
+GLuint load_shader(const char *s, int type) {
+    GLuint shader = glCreateShader(type);
+    GLint len = strlen(s);
+    glShaderSource(shader, 1, (const GLchar **) &s, &len); // HAHAHAH SO OPENGL DOESNT KNOW HOW TO USE STRINGS WITH NULL TERMINATORS HYSTERICAL
+    glCompileShader(shader);
+
+    // yes. Error checking takes lots of lines. Goodbye low sloc. Thank you OpenGL >:(
+    int status;
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
+    if(status == GL_FALSE) {
+        show_info_log(shader, glGetShaderiv, glGetShaderInfoLog);
+        glDeleteShader(shader);
+        return 0; // failed.
+    }
+    return shader;
+}
+
+GLuint make_program(GLuint v_shader, GLuint f_shader) {
+    GLuint program = glCreateProgram();
+    glAttachShader(program, v_shader);
+    glAttachShader(program, f_shader);
+    glLinkProgram(program);
+
+    GLint program_ok;
+    glGetProgramiv(program, GL_LINK_STATUS, &program_ok);
+    if(!program_ok) { // lovely. More bloated error checking.
+        show_info_log(program, glGetProgramiv, glGetProgramInfoLog);
+        glDeleteProgram(program);
+        return 0;
+    }
+    return program;
+}
 
 GLFWwindow *init() {
     ENSURE(glfwInit(), "failed to initialize GLFW");
@@ -49,9 +102,9 @@ void draw_buf(GLuint vb, unsigned int len) {
     glDisableVertexAttribArray(0);
 }
 
-void clear() {
-    glClearColor(0.0, 0.4, 1.0, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT);
+void clear(GLfloat r, GLfloat g, GLfloat b) {
+    glClearColor(r, g, b, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void render_frame(GLFWwindow *w) {
