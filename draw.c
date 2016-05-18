@@ -1,19 +1,11 @@
-// You may think this is C++ a file, but let's pretend C++ isn't a thing.
-// WELCOME TO C WORLD BABY :3
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
-#include <glm/gtx/transform.hpp>
+#include "linmath.h"
+#include "threedee.h"
 #define ENSURE(m, e) if(!(m)) {fprintf(stderr, #m ": %s\n", e); return NULL;}
-
-typedef struct {
-    GLuint vb;
-    // attrib array maybe?
-} obj_t;
 
 static void show_info_log( // da frick is this ugly thing you ask? welcome to opengl error reporting >:)
         GLuint object,
@@ -75,9 +67,11 @@ GLFWwindow *init() {
     GLFWwindow *w;
     ENSURE((w = glfwCreateWindow(1280, 720, "game", NULL, NULL)), "window failed");
     glfwMakeContextCurrent(w);
-    glewExperimental = true;
+    glewExperimental = 1;
     ENSURE(glewInit() == GLEW_OK, "failed to init glew");
     glfwSetInputMode(w, GLFW_STICKY_KEYS, GL_TRUE);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
 
     return w;
 }
@@ -97,8 +91,8 @@ GLuint create_buf(GLfloat *data, size_t size) {
 void draw_buf(GLuint vb, unsigned int len) {
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, vb);
-    glVertexAttribPointer(0, len, GL_FLOAT, GL_FALSE, 0, NULL);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+    glDrawArrays(GL_TRIANGLES, 0, len);
     glDisableVertexAttribArray(0);
 }
 
