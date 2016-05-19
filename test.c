@@ -1,11 +1,37 @@
 #include "draw.c"
 
-int main() {
-    float width = 800;
-    float height = 600;
+vec3 position = (vec3) {0, 0, 5};
+float h_angle = 3.14f;
+float v_angle = 0.0;
+float fov = 45.0f;
+float speed = 3.0f;
+float mouse_speed = 0.005f;
 
+int width = 800;
+int height = 600;
+
+void handle_input(GLFWwindow *w) {
+    double xpos, ypos;
+    glfwGetCursorPos(w, &xpos, &ypos);
+    h_angle += mouse_speed * (width/2 - xpos); //*dt
+    v_angle += mouse_speed * (height/2 - ypos); //*dt
+    vec3 dir;
+    dir[0] = cos(v_angle) * sin(h_angle);
+    dir[1] = sin(v_angle);
+    dir[2] = cos(v_angle) * cos(h_angle);
+
+    vec3 r;
+    r[0] = sin(h_angle - M_PI/2.0f);
+    r[1] = 0;
+    r[0] = cos(h_angle - M_PI/2.0f);
+    vec3 up;
+    vec3_mul_cross(up, r, dir);
+    // TODO: keyboard input
+}
+
+int main() {
     // TODO: WRITE THIS CRAP IN CRSYTAL
-    GLFWwindow *w = init();
+    GLFWwindow *w = init(width, height);
 
     GLfloat box[] = {
         -1.0f,-1.0f,-1.0f, // triangle 1 : begin
@@ -85,6 +111,7 @@ int main() {
     GLuint mat_id = glGetUniformLocation(p, "MVP");
 
     do {
+        handle_input(w);
         clear(0.0, 0.0, 0.3);
         glUseProgram(p);
         glUniformMatrix4fv(mat_id, 1, GL_FALSE, &mvp[0][0]);

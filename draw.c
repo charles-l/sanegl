@@ -56,7 +56,7 @@ GLuint make_program(GLuint v_shader, GLuint f_shader) {
     return program;
 }
 
-GLFWwindow *init() {
+GLFWwindow *init(int width, int height) {
     ENSURE(glfwInit(), "failed to initialize GLFW");
     glfwWindowHint(GLFW_SAMPLES, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -65,7 +65,7 @@ GLFWwindow *init() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     GLFWwindow *w;
-    ENSURE((w = glfwCreateWindow(1280, 720, "game", NULL, NULL)), "window failed");
+    ENSURE((w = glfwCreateWindow(width, height, "game", NULL, NULL)), "window failed");
     glfwMakeContextCurrent(w);
     glewExperimental = 1;
     ENSURE(glewInit() == GLEW_OK, "failed to init glew");
