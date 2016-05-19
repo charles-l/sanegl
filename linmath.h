@@ -96,6 +96,15 @@ static inline void mat4x4_identity(mat4x4 M)
 		for(j=0; j<4; ++j)
 			M[i][j] = i==j ? 1.f : 0.f;
 }
+static inline void mat4x4_diag(mat4x4 M, float v)
+{
+	int i, j;
+	for(i=0; i<4; ++i)
+		for(j=0; j<4; ++j)
+			M[i][j] = 0.0f;
+	for(i=0; i<4; ++i)
+		M[i][i] = v;
+}
 static inline void mat4x4_dup(mat4x4 M, mat4x4 N)
 {
 	int i, j;
@@ -577,8 +586,7 @@ static inline void quat_from_mat4x4(quat q, mat4x4 M)
 	q[3] = (M[p[2]][p[1]] - M[p[1]][p[2]])/(2.f*r);
 }
 
-static inline double radians(double radians) {
-	return radians * (180.0 / M_PI);
+static inline double radians(double degrees) {
+	return (degrees * M_PI) / 180.0;
 }
-
 #endif

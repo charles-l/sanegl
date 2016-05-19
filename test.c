@@ -1,6 +1,5 @@
 #include "draw.c"
 
-typedef mat4x4 mat4;
 int main() {
     float width = 800;
     float height = 600;
@@ -67,18 +66,21 @@ int main() {
     GLuint f = load_shader(f_shader, GL_FRAGMENT_SHADER);
     GLuint p = make_program(v, f);
 
-    mat4 proj;
-    mat4x4_perspective(proj, radians(45.0f), width / height, 0.1f, 100.0f);
-    mat4 view;
+    mat4x4 proj;
+    mat4x4 view;
+    mat4x4 mvp;
+    mat4x4 model;
+    mat4x4_diag(model, 1.0f);
+    mat4x4_perspective(proj, radians(45), width / height, 0.1f, 100.0f);
+
     mat4x4_look_at(view,
             (vec3){4, 3, 3},
             (vec3){0, 0, 0},
             (vec3){0, 1, 0}
             );
 
-    mat4 model = {1.0f};
-    mat4 mvp;
     mat4x4_mul(mvp, proj, view);
+    mat4x4_mul(mvp, mvp, model);
 
     GLuint mat_id = glGetUniformLocation(p, "MVP");
 
