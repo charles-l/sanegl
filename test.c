@@ -1,37 +1,64 @@
 #include "draw.c"
+#define UNPACK3(f) f[0], f[1], f[2]
 
-vec3 position = (vec3) {0, 0, 5};
+vec3 dir = {0, 0, 0};
+vec3 up = {0};
+vec3 position = {0, 0, 5};
 float h_angle = 3.14f;
 float v_angle = 0.0;
 float fov = 45.0f;
-float speed = 3.0f;
+float speed = 5.0f;
 float mouse_speed = 0.005f;
 
 int width = 800;
 int height = 600;
 
-void handle_input(GLFWwindow *w) {
+void handle_input(GLFWwindow *w, float dt) {
+    dt *= 1000;
     double xpos, ypos;
     glfwGetCursorPos(w, &xpos, &ypos);
-    h_angle += mouse_speed * (width/2 - xpos); //*dt
-    v_angle += mouse_speed * (height/2 - ypos); //*dt
-    vec3 dir;
+    glfwSetCursorPos(w, width/2, height/2);
+    h_angle -= mouse_speed * dt * (float)( width/2 - xpos);
+    v_angle += mouse_speed * dt * (float)(height/2 - ypos);
+
     dir[0] = cos(v_angle) * sin(h_angle);
     dir[1] = sin(v_angle);
     dir[2] = cos(v_angle) * cos(h_angle);
 
-    vec3 r;
-    r[0] = sin(h_angle - M_PI/2.0f);
-    r[1] = 0;
-    r[0] = cos(h_angle - M_PI/2.0f);
-    vec3 up;
+    vec3 r = {
+        sin(h_angle - M_PI/2.0f),
+        0,
+        cos(h_angle - M_PI/2.0f)
+    };
     vec3_mul_cross(up, r, dir);
-    // TODO: keyboard input
+
+    // ignore this ugliness for now. it'll eventually be crystal code.
+    vec3 forward;
+    vec3_scale(forward, dir, speed * dt);
+    if(glfwGetKey(w, GLFW_KEY_UP) == GLFW_PRESS) {
+        vec3_add(position, position, forward);
+    }
+    if(glfwGetKey(w, GLFW_KEY_DOWN) == GLFW_PRESS) {
+        vec3_sub(position, position, forward);
+    }
+
+    vec3 strafe;
+    vec3_scale(strafe, r, speed * dt);
+    if(glfwGetKey(w, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+        vec3_add(position, position, strafe);
+    }
+    if(glfwGetKey(w, GLFW_KEY_LEFT) == GLFW_PRESS) {
+        vec3_sub(position, position, strafe);
+    }
 }
 
+double dt = 0.0001;
+double lt = 0.0;
 int main() {
     // TODO: WRITE THIS CRAP IN CRSYTAL
     GLFWwindow *w = init(width, height);
+
+    glfwSetInputMode(w, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     GLfloat box[] = {
         -1.0f,-1.0f,-1.0f, // triangle 1 : begin
@@ -96,22 +123,24 @@ int main() {
     mat4x4 view;
     mat4x4 mvp;
     mat4x4 model;
+    vec3 tmp;
     mat4x4_diag(model, 1.0f);
-    mat4x4_perspective(proj, radians(45), width / height, 0.1f, 100.0f);
-
-    mat4x4_look_at(view,
-            (vec3){4, 3, 3},
-            (vec3){0, 0, 0},
-            (vec3){0, 1, 0}
-            );
-
-    mat4x4_mul(mvp, proj, view);
-    mat4x4_mul(mvp, mvp, model);
-
-    GLuint mat_id = glGetUniformLocation(p, "MVP");
-
     do {
-        handle_input(w);
+        handle_input(w, dt);
+
+        mat4x4_perspective(proj, radians(fov), width / height, 0.1f, 100.0f);
+        vec3_add(tmp, position, dir);
+        mat4x4_look_at(view,
+                position,
+                tmp,
+                up);
+
+        mat4x4_mul(mvp, proj, view);
+        //mat4x4_mul(mvp, mvp, model);
+
+        GLuint mat_id = glGetUniformLocation(p, "MVP");
+
+        dt = glfwGetTime() - lt;
         clear(0.0, 0.0, 0.3);
         glUseProgram(p);
         glUniformMatrix4fv(mat_id, 1, GL_FALSE, &mvp[0][0]);
@@ -119,5 +148,6 @@ int main() {
         render_frame(w);
         glfwSwapBuffers(w);
         glfwPollEvents();
+        lt = glfwGetTime(); // set last time
     } while (glfwGetKey(w, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(w) == 0);
 }
