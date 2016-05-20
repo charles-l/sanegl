@@ -1,5 +1,9 @@
 #include "draw.c"
+
 #define UNPACK3(f) f[0], f[1], f[2]
+
+// used for debug:
+#define PRINTVEC(v) printf(#v ": %f %f %f\n", UNPACK3(v));
 
 vec3 dir = {0, 0, 0};
 vec3 up = {0};
@@ -14,11 +18,10 @@ int width = 800;
 int height = 600;
 
 void handle_input(GLFWwindow *w, float dt) {
-    dt *= 1000;
     double xpos, ypos;
     glfwGetCursorPos(w, &xpos, &ypos);
     glfwSetCursorPos(w, width/2, height/2);
-    h_angle -= mouse_speed * dt * (float)( width/2 - xpos);
+    h_angle += mouse_speed * dt * (float)( width/2 - xpos);
     v_angle += mouse_speed * dt * (float)(height/2 - ypos);
 
     dir[0] = cos(v_angle) * sin(h_angle);
@@ -52,8 +55,6 @@ void handle_input(GLFWwindow *w, float dt) {
     }
 }
 
-double dt = 0.0001;
-double lt = 0.0;
 int main() {
     // TODO: WRITE THIS CRAP IN CRSYTAL
     GLFWwindow *w = init(width, height);
@@ -125,7 +126,14 @@ int main() {
     mat4x4 model;
     vec3 tmp;
     mat4x4_diag(model, 1.0f);
+
+    double dt;
+    double last_time = 0;
     do {
+        dt = glfwGetTime() - last_time;
+        last_time = glfwGetTime(); // set last time
+
+        printf("dt: %f\n", dt);
         handle_input(w, dt);
 
         mat4x4_perspective(proj, radians(fov), width / height, 0.1f, 100.0f);
@@ -140,7 +148,6 @@ int main() {
 
         GLuint mat_id = glGetUniformLocation(p, "MVP");
 
-        dt = glfwGetTime() - lt;
         clear(0.0, 0.0, 0.3);
         glUseProgram(p);
         glUniformMatrix4fv(mat_id, 1, GL_FALSE, &mvp[0][0]);
@@ -148,6 +155,5 @@ int main() {
         render_frame(w);
         glfwSwapBuffers(w);
         glfwPollEvents();
-        lt = glfwGetTime(); // set last time
     } while (glfwGetKey(w, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(w) == 0);
 }
