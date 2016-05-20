@@ -153,7 +153,7 @@ int main() {
         glUniformMatrix4fv(mat_id, 1, GL_FALSE, &mvp[0][0]);
         draw_buf(vb, 12 * 3);
         draw_buf(vb2, 12 * 3);
-        render_frame(w);
+        update_frame(w);
         glfwSwapBuffers(w);
         glfwPollEvents();
     } while (glfwGetKey(w, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(w) == 0);

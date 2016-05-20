@@ -158,7 +158,8 @@ GLuint make_program(GLuint v_shader, GLuint f_shader) {
     return program;
 }
 
-GLFWwindow *init(int width, int height) {
+// returns a GLFWwindow
+void *init_draw(int width, int height) {
     ENSURE(glfwInit(), "failed to initialize GLFW");
     glfwWindowHint(GLFW_SAMPLES, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -175,7 +176,7 @@ GLFWwindow *init(int width, int height) {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
-    return w;
+    return (void *) w;
 }
 
 GLuint create_buf(GLfloat *data, size_t size) {
@@ -203,7 +204,7 @@ void clear(GLfloat r, GLfloat g, GLfloat b) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void render_frame(GLFWwindow *w) {
-    glfwSwapBuffers(w);
-    glfwPollEvents();
+void update_frame(void *w) {
+    glfwSwapBuffers((GLFWwindow *) w);
+    glfwPollEvents(); // hehe. do something sane with this plz
 }
