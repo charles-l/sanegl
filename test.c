@@ -1,4 +1,4 @@
-#include "draw.c"
+#include "threedee.c"
 
 #define UNPACK3(f) f[0], f[1], f[2]
 
@@ -101,6 +101,7 @@ int main() {
     };
 
     GLuint vb = create_buf(box, 12 * 3 * 3 * sizeof(float));
+    GLuint vb2 = create_buf(box, 12 * 3 * 3 * sizeof(float));
 
     // TODO: move to files or something
     const char *v_shader = "#version 330 core \n\
@@ -125,7 +126,7 @@ int main() {
     mat4x4 mvp;
     mat4x4 model;
     vec3 tmp;
-    mat4x4_diag(model, 1.0f);
+    mat4x4_diag(model, 2.0f);
 
     double dt;
     double last_time = 0;
@@ -133,7 +134,6 @@ int main() {
         dt = glfwGetTime() - last_time;
         last_time = glfwGetTime(); // set last time
 
-        printf("dt: %f\n", dt);
         handle_input(w, dt);
 
         mat4x4_perspective(proj, radians(fov), width / height, 0.1f, 100.0f);
@@ -152,6 +152,7 @@ int main() {
         glUseProgram(p);
         glUniformMatrix4fv(mat_id, 1, GL_FALSE, &mvp[0][0]);
         draw_buf(vb, 12 * 3);
+        draw_buf(vb2, 12 * 3);
         render_frame(w);
         glfwSwapBuffers(w);
         glfwPollEvents();
