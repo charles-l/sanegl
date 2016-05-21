@@ -88,6 +88,7 @@ static inline void vec4_reflect(vec4 r, vec4 v, vec4 n)
 		r[i] = v[i] - p*n[i];
 }
 
+// mat4x4[column][row]
 typedef vec4 mat4x4[4];
 static inline void mat4x4_identity(mat4x4 M)
 {

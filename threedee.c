@@ -220,4 +220,15 @@ void calc_mvp(mat4x4 mvp, mat4x4 model, vec3 pos, vec3 dir, vec3 up, float fov, 
             up);
     mat4x4_mul(mvp, proj, view);
     mat4x4_mul(mvp, mvp, model);
+    mat4x4 t;
+    mat4x4 m;
+    mat4x4_look_at(t, (vec3){0, 30, 6}, (vec3){0, 0, 0}, (vec3){0, 1, 0});
+    mat4x4_mul(m, proj, t);
+    mat4x4_mul(m, m, model);
+    for(int i = 0; i < 4; i++) {
+        for(int j = 0; j < 4; j++)
+            printf("%f ", m[j][i]);
+        printf("\n");
+    }
+    puts("---");
 }
