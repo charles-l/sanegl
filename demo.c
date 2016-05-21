@@ -1,7 +1,6 @@
 // test to make sure the loader works
-#include <GL/glut.h>
 #include "threedee.h"
-
+#include <GL/glut.h>
 void init(void)
 {
    glClearColor(0.0, 0.0, 0.2, 0.0);
@@ -32,21 +31,21 @@ void display(void)
     {
         glColor3f(1.0,0.0,0.0);
         glVertex3f(
-                o->vertex[o->polygon[i].a].x * SCALE,
-                o->vertex[o->polygon[i].a].y * SCALE,
-                o->vertex[o->polygon[i].a].z * SCALE
+                o->vertex[o->polygon[i].a][0] * SCALE,
+                o->vertex[o->polygon[i].a][1] * SCALE,
+                o->vertex[o->polygon[i].a][2] * SCALE
                 );
         glColor3f(0.0,1.0,0.0);
         glVertex3f(
-                o->vertex[o->polygon[i].b].x * SCALE,
-                o->vertex[o->polygon[i].b].y * SCALE,
-                o->vertex[o->polygon[i].b].z * SCALE
+                o->vertex[o->polygon[i].b][0] * SCALE,
+                o->vertex[o->polygon[i].b][1] * SCALE,
+                o->vertex[o->polygon[i].b][2] * SCALE
                 );
         glColor3f(0.0,0.0,1.0);
         glVertex3f(
-                o->vertex[o->polygon[i].c].x * SCALE,
-                o->vertex[o->polygon[i].c].y * SCALE,
-                o->vertex[o->polygon[i].c].z * SCALE
+                o->vertex[o->polygon[i].c][0] * SCALE,
+                o->vertex[o->polygon[i].c][1] * SCALE,
+                o->vertex[o->polygon[i].c][2] * SCALE
                 );
     }
     glEnd();
@@ -60,7 +59,7 @@ int main(int argc, char **argv) {
     o = objs[0];
     printf("%s\n", o->name);
     for(int i = 0; i < o->vlen; i++)
-       printf("%f %f %f\n", o->vertex[i].x, o->vertex[i].y, o->vertex[i].z);
+       printf("%f %f %f\n", o->vertex[i][0], o->vertex[i][1], o->vertex[i][2]);
 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);

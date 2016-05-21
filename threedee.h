@@ -3,15 +3,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include "linmath.h"
 
 // initial starting point
 #define MAX_VERTS 20000
 #define MAX_POLYS 20000
 #define MAX_OBJS 16 // max objects in a single file
-
-typedef struct {
-    float x, y, z;
-} vertex_t;
 
 typedef struct {
     int a, b, c;
@@ -23,7 +21,7 @@ typedef struct {
 
 typedef struct {
     poly_t *polygon;
-    vertex_t *vertex;
+    vec3 *vertex;
     mapco_t *mapcoord;
     int vlen; // number of verts
     int plen; // number of polys

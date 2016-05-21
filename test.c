@@ -57,7 +57,7 @@ void handle_input(GLFWwindow *w, float dt) {
 
 int main() {
     // TODO: WRITE THIS CRAP IN CRSYTAL
-    GLFWwindow *w = init(width, height);
+    GLFWwindow *w = init_draw(width, height);
 
     glfwSetInputMode(w, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -121,12 +121,9 @@ int main() {
     GLuint f = load_shader(f_shader, GL_FRAGMENT_SHADER);
     GLuint p = make_program(v, f);
 
-    mat4x4 proj;
-    mat4x4 view;
     mat4x4 mvp;
-    mat4x4 model;
-    vec3 tmp;
-    mat4x4_diag(model, 2.0f);
+    mat4x4 model = {0};
+    mat4x4_diag(model, 1.0f);
 
     double dt;
     double last_time = 0;
@@ -135,17 +132,7 @@ int main() {
         last_time = glfwGetTime(); // set last time
 
         handle_input(w, dt);
-
-        mat4x4_perspective(proj, radians(fov), width / height, 0.1f, 100.0f);
-        vec3_add(tmp, position, dir);
-        mat4x4_look_at(view,
-                position,
-                tmp,
-                up);
-
-        mat4x4_mul(mvp, proj, view);
-        //mat4x4_mul(mvp, mvp, model);
-
+        calc_mvp(mvp, model, position, dir, up, fov, width, height);
         GLuint mat_id = glGetUniformLocation(p, "MVP");
 
         clear(0.0, 0.0, 0.3);

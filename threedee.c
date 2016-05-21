@@ -1,9 +1,7 @@
 #include "threedee.h"
 
-#include <string.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "linmath.h"
 #define ENSURE(m, e) if(!(m)) {fprintf(stderr, #m ": %s\n", e); return NULL;}
 
 static size_t get_fsize(FILE *f) {
@@ -15,8 +13,8 @@ static size_t get_fsize(FILE *f) {
 
 static obj_t *new_obj() {
     obj_t *o = malloc(sizeof(obj_t));
-    o->polygon = malloc(sizeof(poly_t) * MAX_POLYS);
-    o->vertex = malloc(sizeof(vertex_t) * MAX_VERTS);
+    o->polygon = malloc(sizeof(vec3) * MAX_POLYS);
+    o->vertex = malloc(sizeof(vec3) * MAX_VERTS);
     o->mapcoord = malloc(sizeof(mapco_t) * MAX_VERTS);
     o->vlen = 0;
     o->plen = 0;
@@ -66,9 +64,9 @@ obj_t **load_3ds_objs(char *fname) {
                 objs[curo]->vlen = qty;
                 fprintf(stderr, "%d vertices\n", qty);
                 for(i = 0; i < qty; i++) {
-                    fread(&objs[curo]->vertex[i].x, sizeof(float), 1, f);
-                    fread(&objs[curo]->vertex[i].y, sizeof(float), 1, f);
-                    fread(&objs[curo]->vertex[i].z, sizeof(float), 1, f);
+                    fread(&objs[curo]->vertex[i][0], sizeof(float), 1, f);
+                    fread(&objs[curo]->vertex[i][1], sizeof(float), 1, f);
+                    fread(&objs[curo]->vertex[i][2], sizeof(float), 1, f);
                 }
                 break;
             case 0x4120: // chunk faces description
@@ -207,4 +205,19 @@ void clear(GLfloat r, GLfloat g, GLfloat b) {
 void update_frame(void *w) {
     glfwSwapBuffers((GLFWwindow *) w);
     glfwPollEvents(); // hehe. do something sane with this plz
+}
+
+void calc_mvp(mat4x4 mvp, mat4x4 model, vec3 pos, vec3 dir, vec3 up, float fov, float width, float height) {
+    // this horrible mess is what makes objects move in 3D space. Hoorah. CAN YOU FEEL THE MATH YET?!!!
+    mat4x4 proj;
+    mat4x4 view;
+    mat4x4_perspective(proj, radians(fov), width / height, 0.1f, 100.0f);
+    vec3 tmp;
+    vec3_add(tmp, pos, dir);
+    mat4x4_look_at(view,
+            pos,
+            tmp,
+            up);
+    mat4x4_mul(mvp, proj, view);
+    mat4x4_mul(mvp, mvp, model);
 }
