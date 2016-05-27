@@ -171,7 +171,7 @@ void *init_draw(int width, int height) {
     glewExperimental = 1;
     ENSURE(glewInit() == GLEW_OK, "failed to init glew");
     glfwSetInputMode(w, GLFW_STICKY_KEYS, GL_TRUE);
-    //glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
     return (void *) w;
