@@ -177,11 +177,14 @@ void *init_draw(int width, int height) {
     return (void *) w;
 }
 
-GLuint create_buf(GLfloat *data, size_t size) {
+GLuint create_va() {
     GLuint va_id;
     glGenVertexArrays(1, &va_id);
     glBindVertexArray(va_id);
+    return va_id;
+}
 
+GLuint create_buf(GLfloat *data, size_t size) {
     GLuint vb;
     glGenBuffers(1, &vb);
     glBindBuffer(GL_ARRAY_BUFFER, vb);
@@ -189,10 +192,28 @@ GLuint create_buf(GLfloat *data, size_t size) {
     return vb;
 }
 
-void draw_buf(GLuint vb, unsigned int len) {
+// maybe use...
+void enable_attrib(GLuint attrib, GLuint buf_id, GLint len) {
+    glEnableVertexAttribArray(attrib);
+    glBindBuffer(GL_ARRAY_BUFFER, buf_id);
+    glVertexAttribPointer(
+            attrib,
+            len, // number of elements per vertex (probably 3)
+            GL_FLOAT, // type
+            GL_FALSE, // normalized?
+            0, // stride
+            NULL);
+}
+
+void draw_buf(GLuint vb, GLuint nb, unsigned int len) {
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, vb);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ARRAY_BUFFER, nb);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
     glDrawArrays(GL_TRIANGLES, 0, len);
     glDisableVertexAttribArray(0);
 }
