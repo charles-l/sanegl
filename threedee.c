@@ -205,7 +205,7 @@ void enable_attrib(GLuint attrib, GLuint buf_id, GLint len) {
             NULL);
 }
 
-void draw_buf(GLuint vb, GLuint nb, unsigned int len) {
+void draw_buf(GLuint vb, GLuint nb, GLuint uvb, unsigned int len) {
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, vb);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
@@ -213,6 +213,10 @@ void draw_buf(GLuint vb, GLuint nb, unsigned int len) {
     glEnableVertexAttribArray(1);
     glBindBuffer(GL_ARRAY_BUFFER, nb);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
+    glEnableVertexAttribArray(2);
+    glBindBuffer(GL_ARRAY_BUFFER, uvb);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, NULL);
 
     glDrawArrays(GL_TRIANGLES, 0, len);
     glDisableVertexAttribArray(0);
