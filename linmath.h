@@ -1,6 +1,7 @@
 #ifndef LINMATH_H
 #define LINMATH_H
 
+#define __USE_XOPEN
 #include <math.h>
 
 #define LINMATH_H_DEFINE_VEC(n) \
