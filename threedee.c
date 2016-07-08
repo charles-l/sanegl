@@ -2,6 +2,10 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 #define ENSURE(m, e) if(!(m)) {fprintf(stderr, #m ": %s\n", e); return NULL;}
 
 static size_t get_fsize(FILE *f) {
@@ -107,7 +111,7 @@ void free_objs(obj_t **o) {
     free(o);
 }
 
-static void show_info_log( // da frick is this ugly thing you ask? welcome to opengl error reporting >:)
+static void show_info_log( // "da frick is this ugly thing", you ask? welcome to opengl error reporting >:)
         GLuint object,
         PFNGLGETSHADERIVPROC glGet__iv,
         PFNGLGETSHADERINFOLOGPROC glGet__InfoLog
@@ -214,12 +218,16 @@ void draw_buf(GLuint vb, GLuint nb, GLuint uvb, unsigned int len) {
     glBindBuffer(GL_ARRAY_BUFFER, nb);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
-    glEnableVertexAttribArray(2);
-    glBindBuffer(GL_ARRAY_BUFFER, uvb);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+    if(uvb) {
+        glEnableVertexAttribArray(2);
+        glBindBuffer(GL_ARRAY_BUFFER, uvb);
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+    }
 
     glDrawArrays(GL_TRIANGLES, 0, len);
     glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+    if(uvb) glDisableVertexAttribArray(2);
 }
 
 void clear(GLfloat r, GLfloat g, GLfloat b) {
@@ -232,22 +240,21 @@ void update_frame(void *w) {
     glfwPollEvents(); // hehe. do something sane with this plz
 }
 
-void calc_mvp(mat4x4 mvp, mat4x4 model, vec3 pos, vec3 dir, vec3 up, float fov, float width, float height) {
-    // this horrible mess is what makes objects move in 3D space. Hoorah. CAN YOU FEEL THE MATH YET?!!!
-    mat4x4 proj;
-    mat4x4 view;
-    mat4x4_perspective(proj, radians(fov), width / height, 0.1f, 100.0f);
-    vec3 tmp;
-    vec3_add(tmp, pos, dir);
-    mat4x4_look_at(view,
-            pos,
-            tmp,
-            up);
-    mat4x4_mul(mvp, proj, view);
-    mat4x4_mul(mvp, mvp, model);
-    mat4x4 t;
-    mat4x4 m;
-    mat4x4_look_at(t, (vec3){0, 30, 6}, (vec3){0, 0, 0}, (vec3){0, 1, 0});
-    mat4x4_mul(m, proj, t);
-    mat4x4_mul(m, m, model);
+img_t *loadf_img(FILE *f) {
+    img_t *i = malloc(sizeof(img_t));
+    int n;
+    i->data = stbi_load_from_file(f, &(i->w), &(i->h), &n, 3);
+    return i;
+}
+
+img_t *loadb_img(char *d, int len) {
+    img_t *i = malloc(sizeof(img_t));
+    int n;
+    i->data = stbi_load_from_memory(d, len, &(i->w), &(i->h), &n, 3);
+    return i;
+}
+
+void free_img(img_t *i) {
+    stbi_image_free(i->data);
+    free(i);
 }

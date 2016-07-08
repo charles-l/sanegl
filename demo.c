@@ -1,74 +1,112 @@
-// test to make sure the loader works
-#include "threedee.h"
-#include <GL/glut.h>
-void init(void)
-{
-   glClearColor(0.0, 0.0, 0.2, 0.0);
-   glShadeModel(GL_SMOOTH);
-   glViewport(0,0,800,600);
-   glMatrixMode(GL_PROJECTION);
-   glLoadIdentity();
-   gluPerspective(45.0f,(GLfloat)800/(GLfloat)600,1.0f,1000.0f);
-   glEnable(GL_DEPTH_TEST);
-   glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
-}
+#include "threedee.c"
 
-obj_t *o;
-int y = 0;
+#define UNPACK3(f) f[0], f[1], f[2]
 
-void display(void)
-{
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glTranslatef(0.0, 0.0, -50);
-    glRotatef(0, 1.0, 0.0, 0.0);
-    glRotatef(y++, 0.0, 1.0, 0.0);
-    glRotatef(0, 0.0, 0.0, 1.0);
-    glBegin(GL_TRIANGLES);
-#define SCALE 20
-    for (int i = 0; i < o->vlen; i++)
-    {
-        glColor3f(1.0,0.0,0.0);
-        glVertex3f(
-                o->vertex[o->polygon[i].a][0] * SCALE,
-                o->vertex[o->polygon[i].a][1] * SCALE,
-                o->vertex[o->polygon[i].a][2] * SCALE
-                );
-        glColor3f(0.0,1.0,0.0);
-        glVertex3f(
-                o->vertex[o->polygon[i].b][0] * SCALE,
-                o->vertex[o->polygon[i].b][1] * SCALE,
-                o->vertex[o->polygon[i].b][2] * SCALE
-                );
-        glColor3f(0.0,0.0,1.0);
-        glVertex3f(
-                o->vertex[o->polygon[i].c][0] * SCALE,
-                o->vertex[o->polygon[i].c][1] * SCALE,
-                o->vertex[o->polygon[i].c][2] * SCALE
-                );
-    }
-    glEnd();
-    glFlush();
-    glutSwapBuffers();
-}
+// used for debug:
+#define PRINTVEC(v) printf(#v ": %f %f %f\n", UNPACK3(v));
 
+vec3 dir = {0, 0, 0};
+vec3 up = {0};
+vec3 position = {0, 0, 5};
+float h_angle = 3.14f;
+float v_angle = 0.0;
+float fov = 45.0f;
+float speed = 5.0f;
+float mouse_speed = 0.005f;
 
-int main(int argc, char **argv) {
-    obj_t **objs = load_3ds_objs("../../spec/gun.3ds");
-    o = objs[0];
-    printf("%s\n", o->name);
-    for(int i = 0; i < o->vlen; i++)
-       printf("%f %f %f\n", o->vertex[i][0], o->vertex[i][1], o->vertex[i][2]);
+int width = 800;
+int height = 600;
 
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-    glutInitWindowSize(800,600);
-    glutInitWindowPosition(0,0);
-    glutCreateWindow("display");
-    glutDisplayFunc(display);
-    glutIdleFunc(display);
-    init();
-    glutMainLoop();
-    return 0;
+int main() {
+    GLFWwindow *w = init_draw(width, height);
+
+    GLfloat box[] = {
+        -1.0f,-1.0f,-1.0f, // triangle 1 : begin
+        -1.0f,-1.0f, 1.0f,
+        -1.0f, 1.0f, 1.0f, // triangle 1 : end
+        1.0f, 1.0f,-1.0f, // triangle 2 : begin
+        -1.0f,-1.0f,-1.0f,
+        -1.0f, 1.0f,-1.0f, // triangle 2 : end
+        1.0f,-1.0f, 1.0f,
+        -1.0f,-1.0f,-1.0f,
+        1.0f,-1.0f,-1.0f,
+        1.0f, 1.0f,-1.0f,
+        1.0f,-1.0f,-1.0f,
+        -1.0f,-1.0f,-1.0f,
+        -1.0f,-1.0f,-1.0f,
+        -1.0f, 1.0f, 1.0f,
+        -1.0f, 1.0f,-1.0f,
+        1.0f,-1.0f, 1.0f,
+        -1.0f,-1.0f, 1.0f,
+        -1.0f,-1.0f,-1.0f,
+        -1.0f, 1.0f, 1.0f,
+        -1.0f,-1.0f, 1.0f,
+        1.0f,-1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,
+        1.0f,-1.0f,-1.0f,
+        1.0f, 1.0f,-1.0f,
+        1.0f,-1.0f,-1.0f,
+        1.0f, 1.0f, 1.0f,
+        1.0f,-1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f,-1.0f,
+        -1.0f, 1.0f,-1.0f,
+        1.0f, 1.0f, 1.0f,
+        -1.0f, 1.0f,-1.0f,
+        -1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,
+        -1.0f, 1.0f, 1.0f,
+        1.0f,-1.0f, 1.0f
+    };
+
+    GLuint vb = create_buf(box, 12 * 3 * 3 * sizeof(float));
+    GLuint vnb = create_buf(box, 12 * 3 * 3 * sizeof(float));
+
+    // TODO: move to files or something
+    const char *v_shader = "#version 330 core \n\
+                            layout(location = 0) in vec3 v_pos; \
+                            layout(location = 1) in vec3 v_normal; \
+                            layout(location = 2) in vec3 uv; \
+                            uniform mat4 M;\
+                            uniform mat4 V;\
+                            uniform mat4 P;\
+                            void main() { \
+                                gl_Position = vec4(v_pos, 1); \
+                            }";
+
+    const char *f_shader = "#version 330 \n\
+                            out vec3 color; \
+                            void main() { \
+                                color = vec3(1.0, 1.0, 1.0); \
+                            }";
+
+    GLuint v = load_shader(v_shader, GL_VERTEX_SHADER);
+    GLuint f = load_shader(f_shader, GL_FRAGMENT_SHADER);
+    GLuint p = make_program(v, f);
+
+    mat4x4 model = {0};
+    mat4x4 view;
+    mat4x4 proj;
+    mat4x4_diag(model, 1.0f);
+    mat4x4_look_at(view, (vec3){4, 3, -3}, (vec3){0, 0, 0}, (vec3){0, 1, 0});
+    mat4x4_perspective(proj, radians(45.0), 4.0f/3.0f, 0.1f, 100.0f);
+
+    double dt;
+    double last_time = 0;
+    do {
+        dt = glfwGetTime() - last_time;
+        last_time = glfwGetTime(); // set last time
+
+        GLuint model_id = glGetUniformLocation(p, "M");
+        GLuint view_id = glGetUniformLocation(p, "V");
+        GLuint proj_id = glGetUniformLocation(p, "P");
+        glUniformMatrix4fv(model_id, 1, GL_FALSE, &model[0][0]);
+        glUniformMatrix4fv(view_id, 1, GL_FALSE, &view[0][0]);
+        glUniformMatrix4fv(proj_id, 1, GL_FALSE, &proj[0][0]);
+
+        clear(0.0, 0.1, 0.3);
+        glUseProgram(p);
+        draw_buf(vb, vnb, 0, 36);
+        update_frame(w);
+    } while (glfwGetKey(w, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(w) == 0);
 }

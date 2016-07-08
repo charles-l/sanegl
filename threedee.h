@@ -29,6 +29,12 @@ typedef struct {
     char name[20];
 } obj_t;
 
+typedef struct {
+    char *data;
+    int w;
+    int h;
+} img_t;
+
 obj_t **load_3ds_objs(char *fname);
 void free_obj(obj_t *o);
 void free_objs(obj_t **o); // free the obj array
