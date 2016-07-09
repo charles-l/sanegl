@@ -174,7 +174,6 @@ void *init_draw(int width, int height) {
     glfwMakeContextCurrent(w);
     glewExperimental = 1;
     ENSURE(glewInit() == GLEW_OK, "failed to init glew");
-    glfwSetInputMode(w, GLFW_STICKY_KEYS, GL_TRUE);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
@@ -210,19 +209,9 @@ void enable_attrib(GLuint attrib, GLuint buf_id, GLint len) {
 }
 
 void draw_buf(GLuint vb, GLuint nb, GLuint uvb, unsigned int len) {
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, vb);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-
-    glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, nb);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-
-    if(uvb) {
-        glEnableVertexAttribArray(2);
-        glBindBuffer(GL_ARRAY_BUFFER, uvb);
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, NULL);
-    }
+    enable_attrib(0, vb, 3);
+    enable_attrib(1, nb, 3);
+    if(uvb) enable_attrib(2, uvb, 2);
 
     glDrawArrays(GL_TRIANGLES, 0, len);
     glDisableVertexAttribArray(0);
