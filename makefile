@@ -12,4 +12,4 @@ demo:
 	cd t && cc $(CFLAGS) -o demo demo.c -lGLU -lGL -lglut -lm -lglfw -lGLEW
 
 docs:
-	pycco -i -d docs threedee.h
+	pycco -d docs threedee.h
