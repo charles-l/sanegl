@@ -13,3 +13,5 @@ demo:
 
 docs:
 	pycco -d docs threedee.h
+
+.PHONY: docs

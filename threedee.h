@@ -42,7 +42,7 @@ typedef struct {
     char name[20];
 } obj_t;
 
-// ## Image type
+// **Image type**
 typedef struct {
     // Raw image data
     char *data;
