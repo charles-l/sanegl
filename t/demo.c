@@ -1,4 +1,5 @@
 #include "threedee.c"
+#include <GLFW/glfw3.h>
 
 #define UNPACK3(f) f[0], f[1], f[2]
 
@@ -32,7 +33,16 @@ void calc_mvp(mat4x4 mvp, mat4x4 model, vec3 pos, vec3 goal, vec3 up, float fov,
 }
 
 int main() {
-    GLFWwindow *w = init_draw(width, height);
+    glfwInit();
+    glfwWindowHint(GLFW_SAMPLES, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    GLFWwindow *w = glfwCreateWindow(width, height, "game", NULL, NULL);
+    glfwMakeContextCurrent(w);
+
+    init_threedee(width, height);
 
     GLfloat box[] = {
         -1.0f,-1.0f,-1.0f, // triangle 1 : begin
@@ -168,6 +178,6 @@ int main() {
         clear(0.0, 0.1, 0.3);
         glUseProgram(p);
         draw_buf(vb, vnb, uvb, 36);
-        update_frame(w);
+        glfwSwapBuffers((GLFWwindow *) w);
     } while (glfwGetKey(w, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(w) == 0);
 }

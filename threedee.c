@@ -3,7 +3,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-#define ENSURE(m, e) if(!(m)) {fprintf(stderr, #m ": %s\n", e); return NULL;}
+#define ENSURE(m, e, r) if(!(m)) {fprintf(stderr, #m ": %s\n", e); r;}
 
 static size_t get_fsize(FILE *f) {
     fseek(f, 0L, SEEK_END);
@@ -158,23 +158,11 @@ GLuint make_program(GLuint v_shader, GLuint f_shader) {
 }
 
 // returns a GLFWwindow
-void *init_draw(int width, int height) {
-    ENSURE(glfwInit(), "failed to initialize GLFW");
-    glfwWindowHint(GLFW_SAMPLES, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    GLFWwindow *w;
-    ENSURE((w = glfwCreateWindow(width, height, "game", NULL, NULL)), "window failed");
-    glfwMakeContextCurrent(w);
+void init_threedee(int width, int height) {
     glewExperimental = 1;
-    ENSURE(glewInit() == GLEW_OK, "failed to init glew");
+    ENSURE(glewInit() == GLEW_OK, "failed to init glew", return);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
-
-    return (void *) w;
 }
 
 GLuint create_va() {
@@ -237,11 +225,6 @@ void draw_buf(GLuint vb, GLuint nb, GLuint uvb, unsigned int len) {
 void clear(GLfloat r, GLfloat g, GLfloat b) {
     glClearColor(r, g, b, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-}
-
-void update_frame(void *w) {
-    glfwSwapBuffers((GLFWwindow *) w);
-    glfwPollEvents(); // hehe. do something sane with this plz
 }
 
 img_t *loadf_img(FILE *f) {
