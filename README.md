@@ -30,17 +30,17 @@ See `t/demo.c` for example codes and stuff.
 * Add Windows support (add `#ifdefs` and make the `makefile` more Windows friendly)
 
 ## FAQ
-__What's the purpose of this project__
+__What's the purpose of this project?__ <br/>
 It's not a full graphics engine, it just limits the boilerplate for the majority of 3D rendering code you may have to write. Stuff like creating VAOs, VBOs, binding textures, initializing things and cleanup are all taken care of for you.
 
-__Why is this project written in C__
+__Why is this project written in C?__<br/>
 I don't like C++
 
-__Why do you have your own `3ds` parser built in (with more custom parsers to come)__
+__Why do you have your own `3ds` parser built in (with more custom parsers to come)?__<br/>
 Because Assimp is bloated and written in C++
 
-__Ewww you use snake_case__
+__Ewww you use snake_case?__<br/>
 Eww to CamelCase. It's C. C code should always use snake_case.
 
-__You have a lot of opinions__
+__You have a lot of opinions?__<br/>
 Yes.
