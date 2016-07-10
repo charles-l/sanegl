@@ -112,7 +112,7 @@ int main() {
         0.667979f, 1.0f-0.335851f
     };
 
-    FILE *imgf = fopen("c/tex.tga", "r");
+    FILE *imgf = fopen("t/tex.tga", "r");
     img_t *i = loadf_img(imgf);
     fclose(imgf);
 
