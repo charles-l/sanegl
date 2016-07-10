@@ -1,8 +1,5 @@
 #include "threedee.h"
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
@@ -195,7 +192,6 @@ GLuint create_buf(GLfloat *data, size_t size) {
     return vb;
 }
 
-// maybe use...
 void enable_attrib(GLuint attrib, GLuint buf_id, GLint len) {
     glEnableVertexAttribArray(attrib);
     glBindBuffer(GL_ARRAY_BUFFER, buf_id);

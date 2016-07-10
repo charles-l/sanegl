@@ -73,24 +73,77 @@ int main() {
         1.0f,-1.0f, 1.0f
     };
 
+    GLfloat g_uv_buffer_data[] = {
+        0.000059f, 1.0f-0.000004f,
+        0.000103f, 1.0f-0.336048f,
+        0.335973f, 1.0f-0.335903f,
+        1.000023f, 1.0f-0.000013f,
+        0.667979f, 1.0f-0.335851f,
+        0.999958f, 1.0f-0.336064f,
+        0.667979f, 1.0f-0.335851f,
+        0.336024f, 1.0f-0.671877f,
+        0.667969f, 1.0f-0.671889f,
+        1.000023f, 1.0f-0.000013f,
+        0.668104f, 1.0f-0.000013f,
+        0.667979f, 1.0f-0.335851f,
+        0.000059f, 1.0f-0.000004f,
+        0.335973f, 1.0f-0.335903f,
+        0.336098f, 1.0f-0.000071f,
+        0.667979f, 1.0f-0.335851f,
+        0.335973f, 1.0f-0.335903f,
+        0.336024f, 1.0f-0.671877f,
+        1.000004f, 1.0f-0.671847f,
+        0.999958f, 1.0f-0.336064f,
+        0.667979f, 1.0f-0.335851f,
+        0.668104f, 1.0f-0.000013f,
+        0.335973f, 1.0f-0.335903f,
+        0.667979f, 1.0f-0.335851f,
+        0.335973f, 1.0f-0.335903f,
+        0.668104f, 1.0f-0.000013f,
+        0.336098f, 1.0f-0.000071f,
+        0.000103f, 1.0f-0.336048f,
+        0.000004f, 1.0f-0.671870f,
+        0.336024f, 1.0f-0.671877f,
+        0.000103f, 1.0f-0.336048f,
+        0.336024f, 1.0f-0.671877f,
+        0.335973f, 1.0f-0.335903f,
+        0.667969f, 1.0f-0.671889f,
+        1.000004f, 1.0f-0.671847f,
+        0.667979f, 1.0f-0.335851f
+    };
+
+    FILE *imgf = fopen("c/tex.jpg", "r");
+    img_t *i = loadf_img(imgf);
+    fclose(imgf);
+
+    GLuint tex_id;
+    glGenTextures(1, &tex_id);
+    glBindTexture(GL_TEXTURE_2D, tex_id);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, i->w, i->h, 0, GL_BGR, GL_UNSIGNED_BYTE, i->data);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
     GLuint va = create_va();
     GLuint vb = create_buf(box, 36 * 3 * sizeof(float));
     GLuint vnb = create_buf(box, 36 * 3 * sizeof(float));
 
-    // TODO: move to files or something
     const char *v_shader = "#version 330 core \n\
                             layout(location = 0) in vec3 v_pos; \
                             layout(location = 1) in vec3 v_normal; \
-                            layout(location = 2) in vec3 uv; \
+                            layout(location = 2) in vec2 v_uv; \
                             uniform mat4 MVP;\
+                            out vec2 UV; \
                             void main() { \
                                 gl_Position = MVP * vec4(v_pos, 1); \
+                                UV = v_uv; \
                             }";
 
     const char *f_shader = "#version 330 \n\
+                            in vec2 UV; \
                             out vec3 color; \
+                            uniform sampler2D tex_sampler; \
                             void main() { \
-                                color = vec3(1.0, 1.0, 1.0); \
+                                color = texture(tex_sampler, UV).rgb; \
                             }";
 
     GLuint v = load_shader(v_shader, GL_VERTEX_SHADER);
