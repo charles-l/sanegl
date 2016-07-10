@@ -116,26 +116,11 @@ int main() {
     img_t *i = loadf_img(imgf);
     fclose(imgf);
 
-    GLuint tex_id;
-    glGenTextures(1, &tex_id);
-    glBindTexture(GL_TEXTURE_2D, tex_id);
-    glTexImage2D(GL_TEXTURE_2D,
-            0,
-            GL_RGB,
-            i->w,
-            i->h,
-            0,
-            GL_BGR,
-            GL_UNSIGNED_BYTE,
-            i->data);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glBindTexture(GL_TEXTURE_2D, 0); // unbind for next texture
-
     GLuint va = create_va();
     GLuint vb = create_buf(box, 36 * 3 * sizeof(float));
     GLuint vnb = create_buf(box, 36 * 3 * sizeof(float));
     GLuint uvb = create_buf(box_uv, 36 * 2 * sizeof(float));
+    GLuint tex_id = create_tex(i);
 
     const char *v_shader = "#version 330 core \n\
                             layout(location = 0) in vec3 v_pos; \
@@ -177,7 +162,6 @@ int main() {
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, tex_id);
-
         GLuint tex_unit = glGetUniformLocation(p, "tex");
         glUniform1i(tex_unit, 0);
 

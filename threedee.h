@@ -67,6 +67,8 @@ void *init_draw(int width, int height);
 GLuint create_va();
 // Create a vertex buffer object. Returns the VBO id.
 GLuint create_buf(GLfloat *data, size_t size);
+// Create a texture buffer
+GLuint create_tex(img_t *i);
 // Enable a vertex attribute (handled internally)
 void enable_attrib(GLuint attrib, GLuint buf_id, GLint len);
 // Draw an object from a vertex buffer, normal buffer and uv buffer

@@ -192,6 +192,25 @@ GLuint create_buf(GLfloat *data, size_t size) {
     return vb;
 }
 
+GLuint create_tex(img_t *i) {
+    GLuint tex_id;
+    glGenTextures(1, &tex_id);
+    glBindTexture(GL_TEXTURE_2D, tex_id);
+    glTexImage2D(GL_TEXTURE_2D,
+            0,
+            GL_RGB,
+            i->w,
+            i->h,
+            0,
+            GL_BGR,
+            GL_UNSIGNED_BYTE,
+            i->data);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glBindTexture(GL_TEXTURE_2D, 0); // unbind for next texture
+    return tex_id;
+}
+
 void enable_attrib(GLuint attrib, GLuint buf_id, GLint len) {
     glEnableVertexAttribArray(attrib);
     glBindBuffer(GL_ARRAY_BUFFER, buf_id);
