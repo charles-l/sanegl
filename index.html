@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Sanegl by charles-l</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Sanegl</h1>
+        <p>an opengl wrapper/helper library</p>
+
+        <p class="view"><a href="https://github.com/charles-l/sanegl">View the Project on GitHub <small>charles-l/sanegl</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/charles-l/sanegl/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/charles-l/sanegl/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/charles-l/sanegl">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a id="sanegl" class="anchor" href="#sanegl" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>sanegl</h1>
+
+<p><em>bring some basic sanity into your GL code</em></p>
+
+<ul>
+<li>limit boilerplate</li>
+<li>hide global state (at least until I switch to OpenGL 4.5 and start using DSA)</li>
+<li>BETTER FREAKING DOCUMENTATION</li>
+</ul>
+
+<h2>
+<a id="docs" class="anchor" href="#docs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>docs</h2>
+
+<p>I'm experimenting with literate programming for this project, so run <code>make docs</code> to generate the docs directory. I'm using pycco for now, but docco and its varients should work as well.</p>
+
+<h2>
+<a id="demo-code" class="anchor" href="#demo-code" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>demo code</h2>
+
+<p><code>make demo &amp;&amp; ./t/demo</code></p>
+
+<p>See <code>t/demo.c</code> for example codes and stuff.</p>
+
+<h2>
+<a id="whats-here" class="anchor" href="#whats-here" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>what's here</h2>
+
+<ul>
+<li>simple opengl helper library</li>
+<li>
+<code>.3ds</code> file loader</li>
+</ul>
+
+<h2>
+<a id="todo" class="anchor" href="#todo" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>TODO</h2>
+
+<ul>
+<li>drop GLFW (only create a GL conetxt)</li>
+<li>other file formats
+
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/MD2_(file_format)">MD2</a></li>
+<li><a href="https://en.wikipedia.org/wiki/MD3_(file_format)">MD3</a></li>
+<li><a href="http://www.3dgep.com/loading-and-animating-md5-models-with-opengl/">MD5</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Wavefront_.obj_file">OBJ</a></li>
+<li><a href="https://en.wikipedia.org/wiki/STL_(file_format)">STL</a></li>
+<li>MS3D</li>
+</ul>
+</li>
+<li>Port OpenGL to 4.5 (yay for DSA!)</li>
+<li>Add Windows support (add <code>#ifdefs</code> and make the <code>makefile</code> more Windows friendly)</li>
+</ul>
+
+<h2>
+<a id="faq" class="anchor" href="#faq" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>FAQ</h2>
+
+<p><strong>What's the purpose of this project?</strong> <br>
+It's not a full graphics engine, it just limits the boilerplate for the majority of 3D rendering code you may have to write. Stuff like creating VAOs, VBOs, binding textures, initializing things and cleanup are all taken care of for you.</p>
+
+<p><strong>Why is this project written in C?</strong><br>
+I don't like C++</p>
+
+<p><strong>Why do you have your own <code>3ds</code> parser built in (with more custom parsers to come)?</strong><br>
+Because Assimp is bloated and written in C++</p>
+
+<p><strong>Ewww you use snake_case?</strong><br>
+Eww to CamelCase. It's C. C code should always use snake_case.</p>
+
+<p><strong>You have a lot of opinions?</strong><br>
+Yes.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/charles-l">charles-l</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
