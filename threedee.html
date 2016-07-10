@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>threedee.h</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><h1>threedee.h</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <p>The main header file for the C OpenGL wrapper.</p>
+<p>The API aims to remove a lot of OpenGL boilerplate to clean up code, and make development easier and faster.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="cp">#ifndef LIB3DS_H</span>
+<span class="cp">#define LIB3DS_H</span>
+
+<span class="cp">#include</span> <span class="cpf">&lt;GL/glew.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&quot;linmath.h&quot;</span><span class="cp"></span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>Some of these <code>#define</code>s might need to be tweaked, depending on the complexity of your scenes.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="cp">#define MAX_VERTS 20000</span>
+<span class="cp">#define MAX_POLYS 20000</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>Max number of objects in a single file</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="cp">#define MAX_OBJS 16</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p><strong>Polygon type</strong></p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <p><code>a</code>, <code>b</code>, and <code>c</code> map to the indexes of vertices in another array</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">poly_t</span><span class="p">;</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      <p><strong>Texture Map coordinates</strong></p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="kt">float</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">mapco_t</span><span class="p">;</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      <p><strong>3D Object</strong></p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="n">poly_t</span> <span class="o">*</span><span class="n">polygon</span><span class="p">;</span>
+    <span class="n">vec3</span> <span class="o">*</span><span class="n">vertex</span><span class="p">;</span>
+    <span class="n">mapco_t</span> <span class="o">*</span><span class="n">mapcoord</span><span class="p">;</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-7'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-7'>#</a>
+      </div>
+      <p>Number of vertices</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="kt">int</span> <span class="n">vlen</span><span class="p">;</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-8'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-8'>#</a>
+      </div>
+      <p>Number of polygons</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="kt">int</span> <span class="n">plen</span><span class="p">;</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-9'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-9'>#</a>
+      </div>
+      <p>Texture id if the file contains multiple images</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="kt">int</span> <span class="n">tex_id</span><span class="p">;</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-10'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-10'>#</a>
+      </div>
+      <p>name of the object</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="kt">char</span> <span class="n">name</span><span class="p">[</span><span class="mi">20</span><span class="p">];</span>
+<span class="p">}</span> <span class="n">obj_t</span><span class="p">;</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-11'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-11'>#</a>
+      </div>
+      <h2>Image type</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-12'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-12'>#</a>
+      </div>
+      <p>Raw image data</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>    <span class="kt">char</span> <span class="o">*</span><span class="n">data</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">w</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">h</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">img_t</span><span class="p">;</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-13'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-13'>#</a>
+      </div>
+      <p>Loads an array of 3D objects from a <code>.3ds</code> file, and returns the array.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">obj_t</span> <span class="o">**</span><span class="nf">load_3ds_objs</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">fname</span><span class="p">);</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-14'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-14'>#</a>
+      </div>
+      <p>Free a single object</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kt">void</span> <span class="nf">free_obj</span><span class="p">(</span><span class="n">obj_t</span> <span class="o">*</span><span class="n">o</span><span class="p">);</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-15'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-15'>#</a>
+      </div>
+      <p>Free the whole returned obj array</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kt">void</span> <span class="nf">free_objs</span><span class="p">(</span><span class="n">obj_t</span> <span class="o">**</span><span class="n">o</span><span class="p">);</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-16'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-16'>#</a>
+      </div>
+      <p>Create an OpenGL shader from a string and return the shader id.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">GLuint</span> <span class="nf">load_shader</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">s</span><span class="p">,</span> <span class="kt">int</span> <span class="n">type</span><span class="p">);</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-17'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-17'>#</a>
+      </div>
+      <p>Create a program from a compiled vertex shader and fragment shader. Returns the program id.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">GLuint</span> <span class="nf">make_program</span><span class="p">(</span><span class="n">GLuint</span> <span class="n">v_shader</span><span class="p">,</span> <span class="n">GLuint</span> <span class="n">f_shader</span><span class="p">);</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-18'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-18'>#</a>
+      </div>
+      <p>Initialize the OpenGL scene (assuming a context has been created)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kt">void</span> <span class="nf">init_threedee</span><span class="p">();</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-19'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-19'>#</a>
+      </div>
+      <p>Create a vertex array object (must be called before <code>create_buf</code>). Returns the VAO id.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">GLuint</span> <span class="nf">create_va</span><span class="p">();</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-20'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-20'>#</a>
+      </div>
+      <p>Create a vertex buffer object. Returns the VBO id.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">GLuint</span> <span class="nf">create_buf</span><span class="p">(</span><span class="n">GLfloat</span> <span class="o">*</span><span class="n">data</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">size</span><span class="p">);</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-21'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-21'>#</a>
+      </div>
+      <p>Create a texture buffer</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">GLuint</span> <span class="nf">create_tex</span><span class="p">(</span><span class="n">img_t</span> <span class="o">*</span><span class="n">i</span><span class="p">);</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-22'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-22'>#</a>
+      </div>
+      <p>Enable a vertex attribute (handled internally)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kt">void</span> <span class="nf">enable_attrib</span><span class="p">(</span><span class="n">GLuint</span> <span class="n">attrib</span><span class="p">,</span> <span class="n">GLuint</span> <span class="n">buf_id</span><span class="p">,</span> <span class="n">GLint</span> <span class="n">len</span><span class="p">);</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-23'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-23'>#</a>
+      </div>
+      <p>Draw an object from a vertex buffer, normal buffer and uv buffer</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kt">void</span> <span class="nf">draw_buf</span><span class="p">(</span><span class="n">GLuint</span> <span class="n">vb</span><span class="p">,</span> <span class="n">GLuint</span> <span class="n">nb</span><span class="p">,</span> <span class="n">GLuint</span> <span class="n">uvb</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">len</span><span class="p">);</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-24'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-24'>#</a>
+      </div>
+      <p>Clear the screen with a color</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kt">void</span> <span class="nf">clear</span><span class="p">(</span><span class="n">GLfloat</span> <span class="n">r</span><span class="p">,</span> <span class="n">GLfloat</span> <span class="n">g</span><span class="p">,</span> <span class="n">GLfloat</span> <span class="n">b</span><span class="p">);</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-25'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-25'>#</a>
+      </div>
+      <p>Load an image from a file.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">img_t</span> <span class="o">*</span><span class="nf">loadf_img</span><span class="p">(</span><span class="kt">FILE</span> <span class="o">*</span><span class="n">f</span><span class="p">);</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-26'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-26'>#</a>
+      </div>
+      <p>Load an image from a buffer in memory.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">img_t</span> <span class="o">*</span><span class="nf">loadb_img</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="kt">int</span> <span class="n">len</span><span class="p">);</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-27'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-27'>#</a>
+      </div>
+      <p>Free an image</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kt">void</span> <span class="nf">free_img</span><span class="p">(</span><span class="n">img_t</span> <span class="o">*</span><span class="n">i</span><span class="p">);</span>
+
+<span class="cp">#endif</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>
