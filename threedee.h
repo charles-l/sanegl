@@ -61,7 +61,7 @@ GLuint load_shader(const char *s, int type);
 // Create a program from a compiled vertex shader and fragment shader. Returns the program id.
 GLuint make_program(GLuint v_shader, GLuint f_shader);
 // Initialize the OpenGL scene (assuming a context has been created)
-void init_threedee(int width, int height);
+void init_threedee();
 // Create a vertex array object (must be called before `create_buf`). Returns the VAO id.
 GLuint create_va();
 // Create a vertex buffer object. Returns the VBO id.

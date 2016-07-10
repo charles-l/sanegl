@@ -158,7 +158,7 @@ GLuint make_program(GLuint v_shader, GLuint f_shader) {
 }
 
 // returns a GLFWwindow
-void init_threedee(int width, int height) {
+void init_threedee() {
     glewExperimental = 1;
     ENSURE(glewInit() == GLEW_OK, "failed to init glew", return);
     glEnable(GL_DEPTH_TEST);
