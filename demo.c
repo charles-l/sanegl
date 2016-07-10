@@ -73,7 +73,7 @@ int main() {
         1.0f,-1.0f, 1.0f
     };
 
-    GLfloat g_uv_buffer_data[] = {
+    GLfloat box_uv[] = {
         0.000059f, 1.0f-0.000004f,
         0.000103f, 1.0f-0.336048f,
         0.335973f, 1.0f-0.335903f,
@@ -112,20 +112,30 @@ int main() {
         0.667979f, 1.0f-0.335851f
     };
 
-    FILE *imgf = fopen("c/tex.jpg", "r");
+    FILE *imgf = fopen("c/tex.tga", "r");
     img_t *i = loadf_img(imgf);
     fclose(imgf);
 
     GLuint tex_id;
     glGenTextures(1, &tex_id);
     glBindTexture(GL_TEXTURE_2D, tex_id);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, i->w, i->h, 0, GL_BGR, GL_UNSIGNED_BYTE, i->data);
+    glTexImage2D(GL_TEXTURE_2D,
+            0,
+            GL_RGB,
+            i->w,
+            i->h,
+            0,
+            GL_BGR,
+            GL_UNSIGNED_BYTE,
+            i->data);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glBindTexture(GL_TEXTURE_2D, 0); // unbind for next texture
 
     GLuint va = create_va();
     GLuint vb = create_buf(box, 36 * 3 * sizeof(float));
     GLuint vnb = create_buf(box, 36 * 3 * sizeof(float));
+    GLuint uvb = create_buf(box_uv, 36 * 2 * sizeof(float));
 
     const char *v_shader = "#version 330 core \n\
                             layout(location = 0) in vec3 v_pos; \
@@ -141,9 +151,9 @@ int main() {
     const char *f_shader = "#version 330 \n\
                             in vec2 UV; \
                             out vec3 color; \
-                            uniform sampler2D tex_sampler; \
+                            uniform sampler2D tex; \
                             void main() { \
-                                color = texture(tex_sampler, UV).rgb; \
+                                color = texture(tex, UV).rgb; \
                             }";
 
     GLuint v = load_shader(v_shader, GL_VERTEX_SHADER);
@@ -165,9 +175,15 @@ int main() {
         GLuint mvp_id = glGetUniformLocation(p, "MVP");
         glUniformMatrix4fv(mvp_id, 1, GL_FALSE, &mvp[0][0]);
 
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, tex_id);
+
+        GLuint tex_unit = glGetUniformLocation(p, "tex");
+        glUniform1i(tex_unit, 0);
+
         clear(0.0, 0.1, 0.3);
         glUseProgram(p);
-        draw_buf(vb, vnb, 0, 36);
+        draw_buf(vb, vnb, uvb, 36);
         update_frame(w);
     } while (glfwGetKey(w, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(w) == 0);
 }
