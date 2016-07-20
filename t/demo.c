@@ -132,47 +132,47 @@ int main() {
 
     GLfloat skybox_data[] = {
         // Positions
-        -1.0f,  1.0f, -1.0f,
-        -1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f,
-        1.0f,  1.0f, -1.0f,
-        -1.0f,  1.0f, -1.0f,
+        -5.0f,  5.0f, -5.0f,
+        -5.0f, -5.0f, -5.0f,
+        5.0f, -5.0f, -5.0f,
+        5.0f, -5.0f, -5.0f,
+        5.0f,  5.0f, -5.0f,
+        -5.0f,  5.0f, -5.0f,
 
-        -1.0f, -1.0f,  1.0f,
-        -1.0f, -1.0f, -1.0f,
-        -1.0f,  1.0f, -1.0f,
-        -1.0f,  1.0f, -1.0f,
-        -1.0f,  1.0f,  1.0f,
-        -1.0f, -1.0f,  1.0f,
+        -5.0f, -5.0f,  5.0f,
+        -5.0f, -5.0f, -5.0f,
+        -5.0f,  5.0f, -5.0f,
+        -5.0f,  5.0f, -5.0f,
+        -5.0f,  5.0f,  5.0f,
+        -5.0f, -5.0f,  5.0f,
 
-        1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f,  1.0f,
-        1.0f,  1.0f,  1.0f,
-        1.0f,  1.0f,  1.0f,
-        1.0f,  1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f,
+        5.0f, -5.0f, -5.0f,
+        5.0f, -5.0f,  5.0f,
+        5.0f,  5.0f,  5.0f,
+        5.0f,  5.0f,  5.0f,
+        5.0f,  5.0f, -5.0f,
+        5.0f, -5.0f, -5.0f,
 
-        -1.0f, -1.0f,  1.0f,
-        -1.0f,  1.0f,  1.0f,
-        1.0f,  1.0f,  1.0f,
-        1.0f,  1.0f,  1.0f,
-        1.0f, -1.0f,  1.0f,
-        -1.0f, -1.0f,  1.0f,
+        -5.0f, -5.0f,  5.0f,
+        -5.0f,  5.0f,  5.0f,
+        5.0f,  5.0f,  5.0f,
+        5.0f,  5.0f,  5.0f,
+        5.0f, -5.0f,  5.0f,
+        -5.0f, -5.0f,  5.0f,
 
-        -1.0f,  1.0f, -1.0f,
-        1.0f,  1.0f, -1.0f,
-        1.0f,  1.0f,  1.0f,
-        1.0f,  1.0f,  1.0f,
-        -1.0f,  1.0f,  1.0f,
-        -1.0f,  1.0f, -1.0f,
+        -5.0f,  5.0f, -5.0f,
+        5.0f,  5.0f, -5.0f,
+        5.0f,  5.0f,  5.0f,
+        5.0f,  5.0f,  5.0f,
+        -5.0f,  5.0f,  5.0f,
+        -5.0f,  5.0f, -5.0f,
 
-        -1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f,  1.0f,
-        1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f,  1.0f,
-        1.0f, -1.0f,  1.0f
+        -5.0f, -5.0f, -5.0f,
+        -5.0f, -5.0f,  5.0f,
+        5.0f, -5.0f, -5.0f,
+        5.0f, -5.0f, -5.0f,
+        -5.0f, -5.0f,  5.0f,
+        5.0f, -5.0f,  5.0f
     };
 
 
@@ -280,13 +280,13 @@ int main() {
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glDepthMask(GL_TRUE);
 
-        /*glUseProgram(p);
+        //glUseProgram(p);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, cube_texture);
         glUniform1i(glGetUniformLocation(p, "tex"), 0);
 
-        draw_mesh(&cube);*/
+        draw_mesh(&cube);
         glfwSwapBuffers((GLFWwindow *) w);
     } while (glfwGetKey(w, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(w) == 0);
 }
