@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>linmath.h</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><h1>linmath.h</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="cp">#ifndef LINMATH_H</span>
+<span class="cp">#define LINMATH_H</span>
+
+<span class="cp">#define __USE_XOPEN</span>
+<span class="cp">#include</span> <span class="cpf">&lt;math.h&gt;</span><span class="cp"></span>
+
+<span class="cp">#define LINMATH_H_DEFINE_VEC(n) \</span>
+<span class="cp">typedef float vec##n[n]; \</span>
+<span class="cp">static inline void vec##n##_add(vec##n r, vec##n const a, vec##n const b) \</span>
+<span class="cp">{ \</span>
+<span class="cp">	int i; \</span>
+<span class="cp">	for(i=0; i&lt;n; ++i) \</span>
+<span class="cp">		r[i] = a[i] + b[i]; \</span>
+<span class="cp">} \</span>
+<span class="cp">static inline void vec##n##_sub(vec##n r, vec##n const a, vec##n const b) \</span>
+<span class="cp">{ \</span>
+<span class="cp">	int i; \</span>
+<span class="cp">	for(i=0; i&lt;n; ++i) \</span>
+<span class="cp">		r[i] = a[i] - b[i]; \</span>
+<span class="cp">} \</span>
+<span class="cp">static inline void vec##n##_scale(vec##n r, vec##n const v, float const s) \</span>
+<span class="cp">{ \</span>
+<span class="cp">	int i; \</span>
+<span class="cp">	for(i=0; i&lt;n; ++i) \</span>
+<span class="cp">		r[i] = v[i] * s; \</span>
+<span class="cp">} \</span>
+<span class="cp">static inline float vec##n##_mul_inner(vec##n const a, vec##n const b) \</span>
+<span class="cp">{ \</span>
+<span class="cp">	float p = 0.; \</span>
+<span class="cp">	int i; \</span>
+<span class="cp">	for(i=0; i&lt;n; ++i) \</span>
+<span class="cp">		p += b[i]*a[i]; \</span>
+<span class="cp">	return p; \</span>
+<span class="cp">} \</span>
+<span class="cp">static inline float vec##n##_len(vec##n const v) \</span>
+<span class="cp">{ \</span>
+<span class="cp">	return sqrtf(vec##n##_mul_inner(v,v)); \</span>
+<span class="cp">} \</span>
+<span class="cp">static inline void vec##n##_norm(vec##n r, vec##n const v) \</span>
+<span class="cp">{ \</span>
+<span class="cp">	float k = 1.0 / vec##n##_len(v); \</span>
+<span class="cp">	vec##n##_scale(r, v, k); \</span>
+<span class="cp">} \</span>
+<span class="cp">static inline void vec##n##_min(vec##n r, vec##n a, vec##n b) \</span>
+<span class="cp">{ \</span>
+<span class="cp">	int i; \</span>
+<span class="cp">	for(i=0; i&lt;n; ++i) \</span>
+<span class="cp">		r[i] = a[i]&lt;b[i] ? a[i] : b[i]; \</span>
+<span class="cp">} \</span>
+<span class="cp">static inline void vec##n##_max(vec##n r, vec##n a, vec##n b) \</span>
+<span class="cp">{ \</span>
+<span class="cp">	int i; \</span>
+<span class="cp">	for(i=0; i&lt;n; ++i) \</span>
+<span class="cp">		r[i] = a[i]&gt;b[i] ? a[i] : b[i]; \</span>
+<span class="cp">}</span>
+
+<span class="n">LINMATH_H_DEFINE_VEC</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">LINMATH_H_DEFINE_VEC</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">LINMATH_H_DEFINE_VEC</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="n">vec3_mul_cross</span><span class="p">(</span><span class="n">vec3</span> <span class="n">r</span><span class="p">,</span> <span class="n">vec3</span> <span class="k">const</span> <span class="n">a</span><span class="p">,</span> <span class="n">vec3</span> <span class="k">const</span> <span class="n">b</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+	<span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+	<span class="n">r</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="n">vec3_reflect</span><span class="p">(</span><span class="n">vec3</span> <span class="n">r</span><span class="p">,</span> <span class="n">vec3</span> <span class="k">const</span> <span class="n">v</span><span class="p">,</span> <span class="n">vec3</span> <span class="k">const</span> <span class="n">n</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">float</span> <span class="n">p</span>  <span class="o">=</span> <span class="mf">2.f</span><span class="o">*</span><span class="n">vec3_mul_inner</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+	<span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">;</span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+		<span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="o">*</span><span class="n">n</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="n">vec4_mul_cross</span><span class="p">(</span><span class="n">vec4</span> <span class="n">r</span><span class="p">,</span> <span class="n">vec4</span> <span class="n">a</span><span class="p">,</span> <span class="n">vec4</span> <span class="n">b</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+	<span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+	<span class="n">r</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">b</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+	<span class="n">r</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.f</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="n">vec4_reflect</span><span class="p">(</span><span class="n">vec4</span> <span class="n">r</span><span class="p">,</span> <span class="n">vec4</span> <span class="n">v</span><span class="p">,</span> <span class="n">vec4</span> <span class="n">n</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">float</span> <span class="n">p</span>  <span class="o">=</span> <span class="mf">2.f</span><span class="o">*</span><span class="n">vec4_mul_inner</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">n</span><span class="p">);</span>
+	<span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+	<span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+		<span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">p</span><span class="o">*</span><span class="n">n</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>mat4x4[column][row]
+Assumes it is invertible</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">typedef</span> <span class="n">vec4</span> <span class="n">mat4x4</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">mat4x4_identity</span><span class="p">(</span><span class="n">mat4x4</span> <span class="n">M</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">int</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">;</span>
+	<span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+		<span class="k">for</span><span class="p">(</span><span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">j</span><span class="p">)</span>
+			<span class="n">M</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="o">==</span><span class="n">j</span> <span class="o">?</span> <span class="mf">1.f</span> <span class="o">:</span> <span class="mf">0.f</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">mat4x4_diag</span><span class="p">(</span><span class="n">mat4x4</span> <span class="n">M</span><span class="p">,</span> <span class="kt">float</span> <span class="n">v</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">int</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">;</span>
+	<span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+		<span class="k">for</span><span class="p">(</span><span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">j</span><span class="p">)</span>
+			<span class="n">M</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span>
+	<span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+		<span class="n">M</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">mat4x4_dup</span><span class="p">(</span><span class="n">mat4x4</span> <span class="n">M</span><span class="p">,</span> <span class="n">mat4x4</span> <span class="n">N</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">int</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">;</span>
+	<span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+		<span class="k">for</span><span class="p">(</span><span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">j</span><span class="p">)</span>
+			<span class="n">M</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">N</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">];</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">mat4x4_row</span><span class="p">(</span><span class="n">vec4</span> <span class="n">r</span><span class="p">,</span> <span class="n">mat4x4</span> <span class="n">M</span><span class="p">,</span> <span class="kt">int</span> <span class="n">i</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">int</span> <span class="n">k</span><span class="p">;</span>
+	<span class="k">for</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">k</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">k</span><span class="p">)</span>
+		<span class="n">r</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">i</span><span class="p">];</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">mat4x4_col</span><span class="p">(</span><span class="n">vec4</span> <span class="n">r</span><span class="p">,</span> <span class="n">mat4x4</span> <span class="n">M</span><span class="p">,</span> <span class="kt">int</span> <span class="n">i</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">int</span> <span class="n">k</span><span class="p">;</span>
+	<span class="k">for</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">k</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">k</span><span class="p">)</span>
+		<span class="n">r</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">k</span><span class="p">];</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">mat4x4_transpose</span><span class="p">(</span><span class="n">mat4x4</span> <span class="n">M</span><span class="p">,</span> <span class="n">mat4x4</span> <span class="n">N</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">int</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">;</span>
+	<span class="k">for</span><span class="p">(</span><span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">j</span><span class="p">)</span>
+		<span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+			<span class="n">M</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">N</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">i</span><span class="p">];</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">mat4x4_add</span><span class="p">(</span><span class="n">mat4x4</span> <span class="n">M</span><span class="p">,</span> <span class="n">mat4x4</span> <span class="n">a</span><span class="p">,</span> <span class="n">mat4x4</span> <span class="n">b</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+	<span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+		<span class="n">vec4_add</span><span class="p">(</span><span class="n">M</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">mat4x4_sub</span><span class="p">(</span><span class="n">mat4x4</span> <span class="n">M</span><span class="p">,</span> <span class="n">mat4x4</span> <span class="n">a</span><span class="p">,</span> <span class="n">mat4x4</span> <span class="n">b</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+	<span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+		<span class="n">vec4_sub</span><span class="p">(</span><span class="n">M</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">mat4x4_scale</span><span class="p">(</span><span class="n">mat4x4</span> <span class="n">M</span><span class="p">,</span> <span class="n">mat4x4</span> <span class="n">a</span><span class="p">,</span> <span class="kt">float</span> <span class="n">k</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+	<span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+		<span class="n">vec4_scale</span><span class="p">(</span><span class="n">M</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">k</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">mat4x4_scale_aniso</span><span class="p">(</span><span class="n">mat4x4</span> <span class="n">M</span><span class="p">,</span> <span class="n">mat4x4</span> <span class="n">a</span><span class="p">,</span> <span class="kt">float</span> <span class="n">x</span><span class="p">,</span> <span class="kt">float</span> <span class="n">y</span><span class="p">,</span> <span class="kt">float</span> <span class="n">z</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+	<span class="n">vec4_scale</span><span class="p">(</span><span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">);</span>
+	<span class="n">vec4_scale</span><span class="p">(</span><span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="p">);</span>
+	<span class="n">vec4_scale</span><span class="p">(</span><span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">z</span><span class="p">);</span>
+	<span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="n">i</span><span class="p">];</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">mat4x4_mul</span><span class="p">(</span><span class="n">mat4x4</span> <span class="n">M</span><span class="p">,</span> <span class="n">mat4x4</span> <span class="n">a</span><span class="p">,</span> <span class="n">mat4x4</span> <span class="n">b</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">mat4x4</span> <span class="n">temp</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="n">k</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">;</span>
+	<span class="k">for</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">c</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">r</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">r</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">temp</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="n">r</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.f</span><span class="p">;</span>
+		<span class="k">for</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">k</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">k</span><span class="p">)</span>
+			<span class="n">temp</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="n">r</span><span class="p">]</span> <span class="o">+=</span> <span class="n">a</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">r</span><span class="p">]</span> <span class="o">*</span> <span class="n">b</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="n">k</span><span class="p">];</span>
+	<span class="p">}</span>
+	<span class="n">mat4x4_dup</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">temp</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">mat4x4_mul_vec4</span><span class="p">(</span><span class="n">vec4</span> <span class="n">r</span><span class="p">,</span> <span class="n">mat4x4</span> <span class="n">M</span><span class="p">,</span> <span class="n">vec4</span> <span class="n">v</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">int</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">;</span>
+	<span class="k">for</span><span class="p">(</span><span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">j</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">r</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.f</span><span class="p">;</span>
+		<span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+			<span class="n">r</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+=</span> <span class="n">M</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">mat4x4_translate</span><span class="p">(</span><span class="n">mat4x4</span> <span class="n">T</span><span class="p">,</span> <span class="kt">float</span> <span class="n">x</span><span class="p">,</span> <span class="kt">float</span> <span class="n">y</span><span class="p">,</span> <span class="kt">float</span> <span class="n">z</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">mat4x4_identity</span><span class="p">(</span><span class="n">T</span><span class="p">);</span>
+	<span class="n">T</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">;</span>
+	<span class="n">T</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span><span class="p">;</span>
+	<span class="n">T</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">z</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">mat4x4_translate_in_place</span><span class="p">(</span><span class="n">mat4x4</span> <span class="n">M</span><span class="p">,</span> <span class="kt">float</span> <span class="n">x</span><span class="p">,</span> <span class="kt">float</span> <span class="n">y</span><span class="p">,</span> <span class="kt">float</span> <span class="n">z</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">vec4</span> <span class="n">t</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="mi">0</span><span class="p">};</span>
+	<span class="n">vec4</span> <span class="n">r</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+	<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">mat4x4_row</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+		<span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">vec4_mul_inner</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">t</span><span class="p">);</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">mat4x4_from_vec3_mul_outer</span><span class="p">(</span><span class="n">mat4x4</span> <span class="n">M</span><span class="p">,</span> <span class="n">vec3</span> <span class="n">a</span><span class="p">,</span> <span class="n">vec3</span> <span class="n">b</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">int</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">;</span>
+	<span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span><span class="p">(</span><span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">j</span><span class="p">)</span>
+		<span class="n">M</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">3</span> <span class="o">&amp;&amp;</span> <span class="n">j</span><span class="o">&lt;</span><span class="mi">3</span> <span class="o">?</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">b</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">:</span> <span class="mf">0.f</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">mat4x4_rotate</span><span class="p">(</span><span class="n">mat4x4</span> <span class="n">R</span><span class="p">,</span> <span class="n">mat4x4</span> <span class="n">M</span><span class="p">,</span> <span class="kt">float</span> <span class="n">x</span><span class="p">,</span> <span class="kt">float</span> <span class="n">y</span><span class="p">,</span> <span class="kt">float</span> <span class="n">z</span><span class="p">,</span> <span class="kt">float</span> <span class="n">angle</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">float</span> <span class="n">s</span> <span class="o">=</span> <span class="n">sinf</span><span class="p">(</span><span class="n">angle</span><span class="p">);</span>
+	<span class="kt">float</span> <span class="n">c</span> <span class="o">=</span> <span class="n">cosf</span><span class="p">(</span><span class="n">angle</span><span class="p">);</span>
+	<span class="n">vec3</span> <span class="n">u</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">};</span>
+
+	<span class="k">if</span><span class="p">(</span><span class="n">vec3_len</span><span class="p">(</span><span class="n">u</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1e-4</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">vec3_norm</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">u</span><span class="p">);</span>
+		<span class="n">mat4x4</span> <span class="n">T</span><span class="p">;</span>
+		<span class="n">mat4x4_from_vec3_mul_outer</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">u</span><span class="p">);</span>
+
+		<span class="n">mat4x4</span> <span class="n">S</span> <span class="o">=</span> <span class="p">{</span>
+			<span class="p">{</span>    <span class="mi">0</span><span class="p">,</span>  <span class="n">u</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="o">-</span><span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">0</span><span class="p">},</span>
+			<span class="p">{</span><span class="o">-</span><span class="n">u</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>     <span class="mi">0</span><span class="p">,</span>  <span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">},</span>
+			<span class="p">{</span> <span class="n">u</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">-</span><span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>     <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">},</span>
+			<span class="p">{</span>    <span class="mi">0</span><span class="p">,</span>     <span class="mi">0</span><span class="p">,</span>     <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">}</span>
+		<span class="p">};</span>
+		<span class="n">mat4x4_scale</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">s</span><span class="p">);</span>
+
+		<span class="n">mat4x4</span> <span class="n">C</span><span class="p">;</span>
+		<span class="n">mat4x4_identity</span><span class="p">(</span><span class="n">C</span><span class="p">);</span>
+		<span class="n">mat4x4_sub</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">T</span><span class="p">);</span>
+
+		<span class="n">mat4x4_scale</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">c</span><span class="p">);</span>
+
+		<span class="n">mat4x4_add</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">C</span><span class="p">);</span>
+		<span class="n">mat4x4_add</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">S</span><span class="p">);</span>
+
+		<span class="n">T</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span><span class="p">;</span>
+		<span class="n">mat4x4_mul</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">T</span><span class="p">);</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="n">mat4x4_dup</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">M</span><span class="p">);</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">mat4x4_rotate_X</span><span class="p">(</span><span class="n">mat4x4</span> <span class="n">Q</span><span class="p">,</span> <span class="n">mat4x4</span> <span class="n">M</span><span class="p">,</span> <span class="kt">float</span> <span class="n">angle</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">float</span> <span class="n">s</span> <span class="o">=</span> <span class="n">sinf</span><span class="p">(</span><span class="n">angle</span><span class="p">);</span>
+	<span class="kt">float</span> <span class="n">c</span> <span class="o">=</span> <span class="n">cosf</span><span class="p">(</span><span class="n">angle</span><span class="p">);</span>
+	<span class="n">mat4x4</span> <span class="n">R</span> <span class="o">=</span> <span class="p">{</span>
+		<span class="p">{</span><span class="mf">1.f</span><span class="p">,</span> <span class="mf">0.f</span><span class="p">,</span> <span class="mf">0.f</span><span class="p">,</span> <span class="mf">0.f</span><span class="p">},</span>
+		<span class="p">{</span><span class="mf">0.f</span><span class="p">,</span>   <span class="n">c</span><span class="p">,</span>   <span class="n">s</span><span class="p">,</span> <span class="mf">0.f</span><span class="p">},</span>
+		<span class="p">{</span><span class="mf">0.f</span><span class="p">,</span>  <span class="o">-</span><span class="n">s</span><span class="p">,</span>   <span class="n">c</span><span class="p">,</span> <span class="mf">0.f</span><span class="p">},</span>
+		<span class="p">{</span><span class="mf">0.f</span><span class="p">,</span> <span class="mf">0.f</span><span class="p">,</span> <span class="mf">0.f</span><span class="p">,</span> <span class="mf">1.f</span><span class="p">}</span>
+	<span class="p">};</span>
+	<span class="n">mat4x4_mul</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">R</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">mat4x4_rotate_Y</span><span class="p">(</span><span class="n">mat4x4</span> <span class="n">Q</span><span class="p">,</span> <span class="n">mat4x4</span> <span class="n">M</span><span class="p">,</span> <span class="kt">float</span> <span class="n">angle</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">float</span> <span class="n">s</span> <span class="o">=</span> <span class="n">sinf</span><span class="p">(</span><span class="n">angle</span><span class="p">);</span>
+	<span class="kt">float</span> <span class="n">c</span> <span class="o">=</span> <span class="n">cosf</span><span class="p">(</span><span class="n">angle</span><span class="p">);</span>
+	<span class="n">mat4x4</span> <span class="n">R</span> <span class="o">=</span> <span class="p">{</span>
+		<span class="p">{</span>   <span class="n">c</span><span class="p">,</span> <span class="mf">0.f</span><span class="p">,</span>   <span class="n">s</span><span class="p">,</span> <span class="mf">0.f</span><span class="p">},</span>
+		<span class="p">{</span> <span class="mf">0.f</span><span class="p">,</span> <span class="mf">1.f</span><span class="p">,</span> <span class="mf">0.f</span><span class="p">,</span> <span class="mf">0.f</span><span class="p">},</span>
+		<span class="p">{</span>  <span class="o">-</span><span class="n">s</span><span class="p">,</span> <span class="mf">0.f</span><span class="p">,</span>   <span class="n">c</span><span class="p">,</span> <span class="mf">0.f</span><span class="p">},</span>
+		<span class="p">{</span> <span class="mf">0.f</span><span class="p">,</span> <span class="mf">0.f</span><span class="p">,</span> <span class="mf">0.f</span><span class="p">,</span> <span class="mf">1.f</span><span class="p">}</span>
+	<span class="p">};</span>
+	<span class="n">mat4x4_mul</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">R</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">mat4x4_rotate_Z</span><span class="p">(</span><span class="n">mat4x4</span> <span class="n">Q</span><span class="p">,</span> <span class="n">mat4x4</span> <span class="n">M</span><span class="p">,</span> <span class="kt">float</span> <span class="n">angle</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">float</span> <span class="n">s</span> <span class="o">=</span> <span class="n">sinf</span><span class="p">(</span><span class="n">angle</span><span class="p">);</span>
+	<span class="kt">float</span> <span class="n">c</span> <span class="o">=</span> <span class="n">cosf</span><span class="p">(</span><span class="n">angle</span><span class="p">);</span>
+	<span class="n">mat4x4</span> <span class="n">R</span> <span class="o">=</span> <span class="p">{</span>
+		<span class="p">{</span>   <span class="n">c</span><span class="p">,</span>   <span class="n">s</span><span class="p">,</span> <span class="mf">0.f</span><span class="p">,</span> <span class="mf">0.f</span><span class="p">},</span>
+		<span class="p">{</span>  <span class="o">-</span><span class="n">s</span><span class="p">,</span>   <span class="n">c</span><span class="p">,</span> <span class="mf">0.f</span><span class="p">,</span> <span class="mf">0.f</span><span class="p">},</span>
+		<span class="p">{</span> <span class="mf">0.f</span><span class="p">,</span> <span class="mf">0.f</span><span class="p">,</span> <span class="mf">1.f</span><span class="p">,</span> <span class="mf">0.f</span><span class="p">},</span>
+		<span class="p">{</span> <span class="mf">0.f</span><span class="p">,</span> <span class="mf">0.f</span><span class="p">,</span> <span class="mf">0.f</span><span class="p">,</span> <span class="mf">1.f</span><span class="p">}</span>
+	<span class="p">};</span>
+	<span class="n">mat4x4_mul</span><span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">R</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">mat4x4_invert</span><span class="p">(</span><span class="n">mat4x4</span> <span class="n">T</span><span class="p">,</span> <span class="n">mat4x4</span> <span class="n">M</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">float</span> <span class="n">s</span><span class="p">[</span><span class="mi">6</span><span class="p">];</span>
+	<span class="kt">float</span> <span class="n">c</span><span class="p">[</span><span class="mi">6</span><span class="p">];</span>
+	<span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">];</span>
+	<span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">];</span>
+	<span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">];</span>
+	<span class="n">s</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">];</span>
+	<span class="n">s</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">];</span>
+	<span class="n">s</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">];</span>
+
+	<span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">];</span>
+	<span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">];</span>
+	<span class="n">c</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">3</span><span class="p">];</span>
+	<span class="n">c</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">];</span>
+	<span class="n">c</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">3</span><span class="p">];</span>
+	<span class="n">c</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">3</span><span class="p">];</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>NOTE: Degrees are an unhandy unit to work with.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="kt">float</span> <span class="n">idet</span> <span class="o">=</span> <span class="mf">1.0f</span><span class="o">/</span><span class="p">(</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">c</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">-</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">c</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">+</span><span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">c</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">+</span><span class="n">s</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">*</span><span class="n">c</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="n">s</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">*</span><span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">s</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">*</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">);</span>
+
+	<span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span> <span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span> <span class="o">*</span> <span class="n">idet</span><span class="p">;</span>
+	<span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">+</span> <span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span> <span class="o">*</span> <span class="n">idet</span><span class="p">;</span>
+	<span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span> <span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">s</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">s</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="n">s</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span> <span class="o">*</span> <span class="n">idet</span><span class="p">;</span>
+	<span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">s</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">+</span> <span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">s</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="n">s</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span> <span class="o">*</span> <span class="n">idet</span><span class="p">;</span>
+
+	<span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">+</span> <span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">idet</span><span class="p">;</span>
+	<span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span> <span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">idet</span><span class="p">;</span>
+	<span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">s</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">+</span> <span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">idet</span><span class="p">;</span>
+	<span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span> <span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">s</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="n">idet</span><span class="p">;</span>
+
+	<span class="n">T</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span> <span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">idet</span><span class="p">;</span>
+	<span class="n">T</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">idet</span><span class="p">;</span>
+	<span class="n">T</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span> <span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">s</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">idet</span><span class="p">;</span>
+	<span class="n">T</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">s</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">idet</span><span class="p">;</span>
+
+	<span class="n">T</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">idet</span><span class="p">;</span>
+	<span class="n">T</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span> <span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">idet</span><span class="p">;</span>
+	<span class="n">T</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">s</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">idet</span><span class="p">;</span>
+	<span class="n">T</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span> <span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">s</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">idet</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">mat4x4_orthonormalize</span><span class="p">(</span><span class="n">mat4x4</span> <span class="n">R</span><span class="p">,</span> <span class="n">mat4x4</span> <span class="n">M</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">mat4x4_dup</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">M</span><span class="p">);</span>
+	<span class="kt">float</span> <span class="n">s</span> <span class="o">=</span> <span class="mf">1.</span><span class="p">;</span>
+	<span class="n">vec3</span> <span class="n">h</span><span class="p">;</span>
+
+	<span class="n">vec3_norm</span><span class="p">(</span><span class="n">R</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">R</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>
+
+	<span class="n">s</span> <span class="o">=</span> <span class="n">vec3_mul_inner</span><span class="p">(</span><span class="n">R</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">R</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>
+	<span class="n">vec3_scale</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">R</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">s</span><span class="p">);</span>
+	<span class="n">vec3_sub</span><span class="p">(</span><span class="n">R</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">R</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">h</span><span class="p">);</span>
+	<span class="n">vec3_norm</span><span class="p">(</span><span class="n">R</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">R</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>
+
+	<span class="n">s</span> <span class="o">=</span> <span class="n">vec3_mul_inner</span><span class="p">(</span><span class="n">R</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">R</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>
+	<span class="n">vec3_scale</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">R</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">s</span><span class="p">);</span>
+	<span class="n">vec3_sub</span><span class="p">(</span><span class="n">R</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">R</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">h</span><span class="p">);</span>
+	<span class="n">vec3_norm</span><span class="p">(</span><span class="n">R</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">R</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+
+	<span class="n">s</span> <span class="o">=</span> <span class="n">vec3_mul_inner</span><span class="p">(</span><span class="n">R</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">R</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+	<span class="n">vec3_scale</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">R</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="p">);</span>
+	<span class="n">vec3_sub</span><span class="p">(</span><span class="n">R</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">R</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">h</span><span class="p">);</span>
+	<span class="n">vec3_norm</span><span class="p">(</span><span class="n">R</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">R</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">mat4x4_frustum</span><span class="p">(</span><span class="n">mat4x4</span> <span class="n">M</span><span class="p">,</span> <span class="kt">float</span> <span class="n">l</span><span class="p">,</span> <span class="kt">float</span> <span class="n">r</span><span class="p">,</span> <span class="kt">float</span> <span class="n">b</span><span class="p">,</span> <span class="kt">float</span> <span class="n">t</span><span class="p">,</span> <span class="kt">float</span> <span class="n">n</span><span class="p">,</span> <span class="kt">float</span> <span class="n">f</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.f</span><span class="o">*</span><span class="n">n</span><span class="o">/</span><span class="p">(</span><span class="n">r</span><span class="o">-</span><span class="n">l</span><span class="p">);</span>
+	<span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.f</span><span class="p">;</span>
+
+	<span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.</span><span class="o">*</span><span class="n">n</span><span class="o">/</span><span class="p">(</span><span class="n">t</span><span class="o">-</span><span class="n">b</span><span class="p">);</span>
+	<span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.f</span><span class="p">;</span>
+
+	<span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span><span class="o">+</span><span class="n">l</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">r</span><span class="o">-</span><span class="n">l</span><span class="p">);</span>
+	<span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">t</span><span class="o">+</span><span class="n">b</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">t</span><span class="o">-</span><span class="n">b</span><span class="p">);</span>
+	<span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">f</span><span class="o">+</span><span class="n">n</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">f</span><span class="o">-</span><span class="n">n</span><span class="p">);</span>
+	<span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.f</span><span class="p">;</span>
+
+	<span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.f</span><span class="o">*</span><span class="p">(</span><span class="n">f</span><span class="o">*</span><span class="n">n</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">f</span><span class="o">-</span><span class="n">n</span><span class="p">);</span>
+	<span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.f</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">mat4x4_ortho</span><span class="p">(</span><span class="n">mat4x4</span> <span class="n">M</span><span class="p">,</span> <span class="kt">float</span> <span class="n">l</span><span class="p">,</span> <span class="kt">float</span> <span class="n">r</span><span class="p">,</span> <span class="kt">float</span> <span class="n">b</span><span class="p">,</span> <span class="kt">float</span> <span class="n">t</span><span class="p">,</span> <span class="kt">float</span> <span class="n">n</span><span class="p">,</span> <span class="kt">float</span> <span class="n">f</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.f</span><span class="o">/</span><span class="p">(</span><span class="n">r</span><span class="o">-</span><span class="n">l</span><span class="p">);</span>
+	<span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.f</span><span class="p">;</span>
+
+	<span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.f</span><span class="o">/</span><span class="p">(</span><span class="n">t</span><span class="o">-</span><span class="n">b</span><span class="p">);</span>
+	<span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.f</span><span class="p">;</span>
+
+	<span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.f</span><span class="o">/</span><span class="p">(</span><span class="n">f</span><span class="o">-</span><span class="n">n</span><span class="p">);</span>
+	<span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.f</span><span class="p">;</span>
+
+	<span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">r</span><span class="o">+</span><span class="n">l</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">r</span><span class="o">-</span><span class="n">l</span><span class="p">);</span>
+	<span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">t</span><span class="o">+</span><span class="n">b</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">t</span><span class="o">-</span><span class="n">b</span><span class="p">);</span>
+	<span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">f</span><span class="o">+</span><span class="n">n</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">f</span><span class="o">-</span><span class="n">n</span><span class="p">);</span>
+	<span class="n">M</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.f</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">mat4x4_perspective</span><span class="p">(</span><span class="n">mat4x4</span> <span class="n">m</span><span class="p">,</span> <span class="kt">float</span> <span class="n">y_fov</span><span class="p">,</span> <span class="kt">float</span> <span class="n">aspect</span><span class="p">,</span> <span class="kt">float</span> <span class="n">n</span><span class="p">,</span> <span class="kt">float</span> <span class="n">f</span><span class="p">)</span>
+<span class="p">{</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>See the OpenGL GLUT documentation for gluLookAt for a description</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	 <span class="o">*</span> <span class="n">linmath</span><span class="p">.</span><span class="n">h</span> <span class="n">uses</span> <span class="n">radians</span> <span class="k">for</span> <span class="n">everything</span><span class="o">!</span> <span class="err">*/</span>
+	<span class="kt">float</span> <span class="k">const</span> <span class="n">a</span> <span class="o">=</span> <span class="mf">1.f</span> <span class="o">/</span> <span class="n">tan</span><span class="p">(</span><span class="n">y_fov</span> <span class="o">/</span> <span class="mf">2.f</span><span class="p">);</span>
+
+	<span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span> <span class="o">/</span> <span class="n">aspect</span><span class="p">;</span>
+	<span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.f</span><span class="p">;</span>
+	<span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.f</span><span class="p">;</span>
+	<span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.f</span><span class="p">;</span>
+
+	<span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.f</span><span class="p">;</span>
+	<span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">;</span>
+	<span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.f</span><span class="p">;</span>
+	<span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.f</span><span class="p">;</span>
+
+	<span class="n">m</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.f</span><span class="p">;</span>
+	<span class="n">m</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.f</span><span class="p">;</span>
+	<span class="n">m</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="p">((</span><span class="n">f</span> <span class="o">+</span> <span class="n">n</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">f</span> <span class="o">-</span> <span class="n">n</span><span class="p">));</span>
+	<span class="n">m</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.f</span><span class="p">;</span>
+
+	<span class="n">m</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.f</span><span class="p">;</span>
+	<span class="n">m</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.f</span><span class="p">;</span>
+	<span class="n">m</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="p">((</span><span class="mf">2.f</span> <span class="o">*</span> <span class="n">f</span> <span class="o">*</span> <span class="n">n</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">f</span> <span class="o">-</span> <span class="n">n</span><span class="p">));</span>
+	<span class="n">m</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.f</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">mat4x4_look_at</span><span class="p">(</span><span class="n">mat4x4</span> <span class="n">m</span><span class="p">,</span> <span class="n">vec3</span> <span class="n">eye</span><span class="p">,</span> <span class="n">vec3</span> <span class="n">center</span><span class="p">,</span> <span class="n">vec3</span> <span class="n">up</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="cm">/* Adapted from Android&#39;s OpenGL Matrix.java.                        */</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <p>of the algorithm. We implement it in a straightforward way:
+TODO: The negation of of can be spared by swapping the order of</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      <pre><code>vec3 t;
+vec3 q_xyz = {q[0], q[1], q[2]};
+vec3 u = {q[0], q[1], q[2]};
+
+vec3_mul_cross(t, q_xyz, v);
+vec3_scale(t, t, 2);
+
+vec3_mul_cross(u, q_xyz, t);
+vec3_scale(t, t, q[3]);
+
+vec3_add(r, v, t);
+vec3_add(r, r, u);
+</code></pre>
+<p>}
+static inline void mat4x4_from_quat(mat4x4 M, quat q)
+{
+    float a = q[3];
+    float b = q[0];
+    float c = q[1];
+    float d = q[2];
+    float a2 = a<em>a;
+    float b2 = b</em>b;
+    float c2 = c<em>c;
+    float d2 = d</em>d;</p>
+<pre><code>M[0][0] = a2 + b2 - c2 - d2;
+M[0][1] = 2.f*(b*c + a*d);
+M[0][2] = 2.f*(b*d - a*c);
+M[0][3] = 0.f;
+
+M[1][0] = 2*(b*c - a*d);
+M[1][1] = a2 - b2 + c2 - d2;
+M[1][2] = 2.f*(c*d + a*b);
+M[1][3] = 0.f;
+
+M[2][0] = 2.f*(b*d + a*c);
+M[2][1] = 2.f*(c*d - a*b);
+M[2][2] = a2 - b2 - c2 + d2;
+M[2][3] = 0.f;
+
+M[3][0] = M[3][1] = M[3][2] = 0.f;
+M[3][3] = 1.f;
+</code></pre>
+<p>}</p>
+<p>static inline void mat4x4o_mul_quat(mat4x4 R, mat4x4 M, quat q)
+{
+XXX: The way this is written only works for othogonal matrices.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	 <span class="o">*</span>       <span class="n">operands</span> <span class="n">in</span> <span class="n">the</span> <span class="n">following</span> <span class="n">cross</span> <span class="n">products</span> <span class="n">in</span> <span class="n">the</span> <span class="n">right</span> <span class="n">way</span><span class="p">.</span> <span class="err">*/</span>
+	<span class="n">vec3</span> <span class="n">f</span><span class="p">;</span>
+	<span class="n">vec3_sub</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">eye</span><span class="p">);</span>
+	<span class="n">vec3_norm</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">f</span><span class="p">);</span>
+
+	<span class="n">vec3</span> <span class="n">s</span><span class="p">;</span>
+	<span class="n">vec3_mul_cross</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">up</span><span class="p">);</span>
+	<span class="n">vec3_norm</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">s</span><span class="p">);</span>
+
+	<span class="n">vec3</span> <span class="n">t</span><span class="p">;</span>
+	<span class="n">vec3_mul_cross</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">f</span><span class="p">);</span>
+
+	<span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span>  <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+	<span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span>  <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+	<span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+	<span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span>   <span class="mf">0.f</span><span class="p">;</span>
+
+	<span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span>  <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+	<span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span>  <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+	<span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+	<span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span>   <span class="mf">0.f</span><span class="p">;</span>
+
+	<span class="n">m</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span>  <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+	<span class="n">m</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span>  <span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+	<span class="n">m</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">f</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+	<span class="n">m</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span>   <span class="mf">0.f</span><span class="p">;</span>
+
+	<span class="n">m</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span>  <span class="mf">0.f</span><span class="p">;</span>
+	<span class="n">m</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span>  <span class="mf">0.f</span><span class="p">;</span>
+	<span class="n">m</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span>  <span class="mf">0.f</span><span class="p">;</span>
+	<span class="n">m</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span>  <span class="mf">1.f</span><span class="p">;</span>
+
+	<span class="n">mat4x4_translate_in_place</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="o">-</span><span class="n">eye</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="n">eye</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">-</span><span class="n">eye</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>
+<span class="p">}</span>
+
+<span class="k">typedef</span> <span class="kt">float</span> <span class="n">quat</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">quat_identity</span><span class="p">(</span><span class="n">quat</span> <span class="n">q</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.f</span><span class="p">;</span>
+	<span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.f</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">quat_add</span><span class="p">(</span><span class="n">quat</span> <span class="n">r</span><span class="p">,</span> <span class="n">quat</span> <span class="n">a</span><span class="p">,</span> <span class="n">quat</span> <span class="n">b</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+	<span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+		<span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">quat_sub</span><span class="p">(</span><span class="n">quat</span> <span class="n">r</span><span class="p">,</span> <span class="n">quat</span> <span class="n">a</span><span class="p">,</span> <span class="n">quat</span> <span class="n">b</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+	<span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+		<span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">quat_mul</span><span class="p">(</span><span class="n">quat</span> <span class="n">r</span><span class="p">,</span> <span class="n">quat</span> <span class="n">p</span><span class="p">,</span> <span class="n">quat</span> <span class="n">q</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="n">vec3</span> <span class="n">w</span><span class="p">;</span>
+	<span class="n">vec3_mul_cross</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">);</span>
+	<span class="n">vec3_scale</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">]);</span>
+	<span class="n">vec3_add</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">);</span>
+	<span class="n">vec3_scale</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]);</span>
+	<span class="n">vec3_add</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">);</span>
+	<span class="n">r</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">*</span><span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">vec3_mul_inner</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">q</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">quat_scale</span><span class="p">(</span><span class="n">quat</span> <span class="n">r</span><span class="p">,</span> <span class="n">quat</span> <span class="n">v</span><span class="p">,</span> <span class="kt">float</span> <span class="n">s</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+	<span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+		<span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">s</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">float</span> <span class="nf">quat_inner_product</span><span class="p">(</span><span class="n">quat</span> <span class="n">a</span><span class="p">,</span> <span class="n">quat</span> <span class="n">b</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">float</span> <span class="n">p</span> <span class="o">=</span> <span class="mf">0.f</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+	<span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+		<span class="n">p</span> <span class="o">+=</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+	<span class="k">return</span> <span class="n">p</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">quat_conj</span><span class="p">(</span><span class="n">quat</span> <span class="n">r</span><span class="p">,</span> <span class="n">quat</span> <span class="n">q</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+	<span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+		<span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">q</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+	<span class="n">r</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">quat_rotate</span><span class="p">(</span><span class="n">quat</span> <span class="n">r</span><span class="p">,</span> <span class="kt">float</span> <span class="n">angle</span><span class="p">,</span> <span class="n">vec3</span> <span class="n">axis</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">vec3</span> <span class="n">v</span><span class="p">;</span>
+	<span class="n">vec3_scale</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">sinf</span><span class="p">(</span><span class="n">angle</span> <span class="o">/</span> <span class="mi">2</span><span class="p">));</span>
+	<span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+	<span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+		<span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+	<span class="n">r</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">cosf</span><span class="p">(</span><span class="n">angle</span> <span class="o">/</span> <span class="mi">2</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="cp">#define quat_norm vec4_norm</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">quat_mul_vec3</span><span class="p">(</span><span class="n">vec3</span> <span class="n">r</span><span class="p">,</span> <span class="n">quat</span> <span class="n">q</span><span class="p">,</span> <span class="n">vec3</span> <span class="n">v</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="o">/*</span>
+ <span class="o">*</span> <span class="n">Method</span> <span class="n">by</span> <span class="n">Fabian</span> <span class="err">&#39;</span><span class="n">ryg</span><span class="err">&#39;</span> <span class="n">Giessen</span> <span class="p">(</span><span class="n">of</span> <span class="n">Farbrausch</span><span class="p">)</span>
+<span class="n">t</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">cross</span><span class="p">(</span><span class="n">q</span><span class="p">.</span><span class="n">xyz</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+<span class="n">v</span><span class="err">&#39;</span> <span class="o">=</span> <span class="n">v</span> <span class="o">+</span> <span class="n">q</span><span class="p">.</span><span class="n">w</span> <span class="o">*</span> <span class="n">t</span> <span class="o">+</span> <span class="n">cross</span><span class="p">(</span><span class="n">q</span><span class="p">.</span><span class="n">xyz</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      <p>TODO: Take care of non-orthogonal case.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="n">quat_mul_vec3</span><span class="p">(</span><span class="n">R</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">q</span><span class="p">,</span> <span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+	<span class="n">quat_mul_vec3</span><span class="p">(</span><span class="n">R</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">q</span><span class="p">,</span> <span class="n">M</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+	<span class="n">quat_mul_vec3</span><span class="p">(</span><span class="n">R</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">q</span><span class="p">,</span> <span class="n">M</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>
+
+	<span class="n">R</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">R</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">R</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.f</span><span class="p">;</span>
+	<span class="n">R</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.f</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">quat_from_mat4x4</span><span class="p">(</span><span class="n">quat</span> <span class="n">q</span><span class="p">,</span> <span class="n">mat4x4</span> <span class="n">M</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="kt">float</span> <span class="n">r</span><span class="o">=</span><span class="mf">0.f</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+
+	<span class="kt">int</span> <span class="n">perm</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="p">};</span>
+	<span class="kt">int</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="n">perm</span><span class="p">;</span>
+
+	<span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kt">float</span> <span class="n">m</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">i</span><span class="p">];</span>
+		<span class="k">if</span><span class="p">(</span> <span class="n">m</span> <span class="o">&lt;</span> <span class="n">r</span> <span class="p">)</span>
+			<span class="k">continue</span><span class="p">;</span>
+		<span class="n">m</span> <span class="o">=</span> <span class="n">r</span><span class="p">;</span>
+		<span class="n">p</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">perm</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+	<span class="p">}</span>
+
+	<span class="n">r</span> <span class="o">=</span> <span class="n">sqrtf</span><span class="p">(</span><span class="mf">1.f</span> <span class="o">+</span> <span class="n">M</span><span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]][</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="p">);</span>
+
+	<span class="k">if</span><span class="p">(</span><span class="n">r</span> <span class="o">&lt;</span> <span class="mf">1e-6</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.f</span><span class="p">;</span>
+		<span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.f</span><span class="p">;</span>
+		<span class="k">return</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="o">/</span><span class="mf">2.f</span><span class="p">;</span>
+	<span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">M</span><span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span><span class="o">/</span><span class="p">(</span><span class="mf">2.f</span><span class="o">*</span><span class="n">r</span><span class="p">);</span>
+	<span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">M</span><span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]][</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]])</span><span class="o">/</span><span class="p">(</span><span class="mf">2.f</span><span class="o">*</span><span class="n">r</span><span class="p">);</span>
+	<span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">M</span><span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]][</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">-</span> <span class="n">M</span><span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]])</span><span class="o">/</span><span class="p">(</span><span class="mf">2.f</span><span class="o">*</span><span class="n">r</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kr">inline</span> <span class="kt">double</span> <span class="nf">radians</span><span class="p">(</span><span class="kt">double</span> <span class="n">degrees</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="p">(</span><span class="n">degrees</span> <span class="o">*</span> <span class="n">M_PI</span><span class="p">)</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="cp">#endif</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>
