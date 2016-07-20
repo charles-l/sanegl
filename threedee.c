@@ -3,110 +3,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-#define ENSURE(m, e, r) if(!(m)) {fprintf(stderr, #m ": %s\n", e); r;}
-
-static size_t get_fsize(FILE *f) {
-    fseek(f, 0L, SEEK_END);
-    size_t fsize = ftell(f);
-    fseek(f, 0L, SEEK_SET);
-    return fsize;
-}
-
-static obj_t *new_obj() {
-    obj_t *o = malloc(sizeof(obj_t));
-    o->polygon = malloc(sizeof(vec3) * MAX_POLYS);
-    o->vertex = malloc(sizeof(vec3) * MAX_VERTS);
-    o->mapcoord = malloc(sizeof(mapco_t) * MAX_VERTS);
-    o->vlen = 0;
-    o->plen = 0;
-    o->tex_id = 0;
-    return o;
-}
-
-obj_t **load_3ds_objs(char *fname) {
-    FILE *f;
-    unsigned short chunk_id;
-    unsigned int chunk_len;
-    unsigned short qty;
-    unsigned short face_flags;
-    if((f = fopen(fname, "rb")) == NULL) return NULL;
-
-    int curo = -1; // hehehe the cleverness is overwhelming
-    obj_t **objs = calloc(MAX_OBJS, sizeof(obj_t *));
-
-    size_t fsize = get_fsize(f);
-
-    while(ftell(f) < fsize) {
-        int i;
-        char c;
-
-        fread(&chunk_id, 2, 1, f);
-        fread(&chunk_len, 4, 1, f);
-
-        switch(chunk_id)
-        {
-            case 0x4d4d: // main chunk
-                break;
-            case 0x3d3d: // 3d editor chunk
-                break;
-            case 0x4000: // object block
-                i = 0;
-                objs[++curo] = new_obj();
-                do {
-                    fread(&c, 1, 1, f);
-                    objs[curo]->name[i] = c;
-                } while (c != '\0' && i++ < 20);
-                printf("%s\n", objs[curo]->name);
-                break;
-            case 0x4100: // triangle mesh (empty node)
-                break;
-            case 0x4110: // vertices list
-                fread(&qty, sizeof(unsigned short), 1, f);
-                objs[curo]->vlen = qty;
-                fprintf(stderr, "%d vertices\n", qty);
-                for(i = 0; i < qty; i++) {
-                    fread(&objs[curo]->vertex[i][0], sizeof(float), 1, f);
-                    fread(&objs[curo]->vertex[i][1], sizeof(float), 1, f);
-                    fread(&objs[curo]->vertex[i][2], sizeof(float), 1, f);
-                }
-                break;
-            case 0x4120: // chunk faces description
-                fread(&qty, sizeof(unsigned short), 1, f);
-                objs[curo]->plen = qty;
-                fprintf(stderr, "%d polys\n", qty);
-                for(i = 0; i < qty; i++) {
-                    fread(&objs[curo]->polygon[i].a, sizeof(unsigned short), 1, f);
-                    fread(&objs[curo]->polygon[i].b, sizeof(unsigned short), 1, f);
-                    fread(&objs[curo]->polygon[i].c, sizeof(unsigned short), 1, f);
-                    fread(&face_flags, sizeof(unsigned short), 1, f);
-                }
-                break;
-            case 0x4140: // mapping coordinate list
-                fread(&qty, sizeof(unsigned short), 1, f);
-                for(i = 0; i < qty; i++) {
-                    fread(&objs[curo]->mapcoord[i].u, sizeof(float), 1, f);
-                    fread(&objs[curo]->mapcoord[i].v, sizeof(float), 1, f);
-                }
-                break;
-            default:
-                fseek(f, chunk_len - 6, SEEK_CUR);
-        }
-    }
-    fclose(f);
-    return objs;
-}
-
-void free_obj(obj_t *o) {
-    if(!o) return;
-    free(o);
-}
-
-void free_objs(obj_t **o) {
-    for(int i = 0; o[i] != NULL; i++) {
-        free(o[i]);
-    }
-    free(o);
-}
+#define ENSURE(m, r, e, ...) if(!(m)) {fprintf(stderr, "%s:%i (" #m "): %s\n", __FILE__, __LINE__, e, ##__VA_ARGS__); r;}
 
 static void show_info_log( // "da frick is this ugly thing", you ask? welcome to opengl error reporting >:)
         GLuint object,
@@ -146,6 +43,8 @@ GLuint make_program(GLuint v_shader, GLuint f_shader) {
     glAttachShader(program, v_shader);
     glAttachShader(program, f_shader);
     glLinkProgram(program);
+    glDeleteShader(v_shader);
+    glDeleteShader(f_shader);
 
     GLint program_ok;
     glGetProgramiv(program, GL_LINK_STATUS, &program_ok);
@@ -160,27 +59,57 @@ GLuint make_program(GLuint v_shader, GLuint f_shader) {
 // returns a GLFWwindow
 void init_threedee() {
     glewExperimental = 1;
-    ENSURE(glewInit() == GLEW_OK, "failed to init glew", return);
+    ENSURE(glewInit() == GLEW_OK, return, "failed to init glew");
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 }
 
-GLuint create_va() {
+mesh_t create_mesh(float *vertices, float *normals, float *uvs, size_t vn) {
+    mesh_t r;
+    r.vn = vn;
+    r.vao = create_vao();
+    GLuint v = 0, n = 0, u = 0;
+    v = create_buf(vertices, 3 * vn * sizeof(float), 3, 0);
+    if(normals) n = create_buf(normals, 3 * vn * sizeof(float), 3, 1);
+    if(uvs) u = create_buf(uvs, 2 * vn * sizeof(float), 2, 2);
+    glBindVertexArray(0);
+    glDeleteBuffers(1, &v); // cleanup i guess. i actually have no idea if this speeds things up. MY COPY PASTA IS SHOWING! LOOK AWAY
+    glDeleteBuffers(1, &n); // avert your eyes plz
+    glDeleteBuffers(1, &u); // seriously. its embarrassing
+    return r;
+}
+
+GLuint create_vao() {
     GLuint va_id;
     glGenVertexArrays(1, &va_id);
     glBindVertexArray(va_id);
     return va_id;
 }
 
-GLuint create_buf(GLfloat *data, size_t size) {
+// TODO: vbo indexing
+GLuint create_buf(GLfloat *data, size_t size, GLuint vertex_size, GLuint attribi) {
     GLuint vb;
     glGenBuffers(1, &vb);
     glBindBuffer(GL_ARRAY_BUFFER, vb);
     glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+    glVertexAttribPointer(
+            attribi,
+            vertex_size, // number of elements per vertex (probably 3)
+            GL_FLOAT, // type
+            GL_FALSE, // normalized?
+            0, // stride
+            NULL);
+    glEnableVertexAttribArray(attribi);
     return vb;
 }
 
-GLuint create_tex(img_t *i) {
+void draw_mesh(mesh_t *m) {
+    glBindVertexArray(m->vao);
+    glDrawArrays(GL_TRIANGLES, 0, m->vn);
+    glBindVertexArray(0);
+}
+
+GLuint load_texi(img_t *i) { // load a texture from image data
     GLuint tex_id;
     glGenTextures(1, &tex_id);
     glBindTexture(GL_TEXTURE_2D, tex_id);
@@ -193,33 +122,18 @@ GLuint create_tex(img_t *i) {
             GL_BGR,
             GL_UNSIGNED_BYTE,
             i->data);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glBindTexture(GL_TEXTURE_2D, 0); // unbind for next texture
     return tex_id;
 }
 
-void enable_attrib(GLuint attrib, GLuint buf_id, GLint len) {
-    glEnableVertexAttribArray(attrib);
-    glBindBuffer(GL_ARRAY_BUFFER, buf_id);
-    glVertexAttribPointer(
-            attrib,
-            len, // number of elements per vertex (probably 3)
-            GL_FLOAT, // type
-            GL_FALSE, // normalized?
-            0, // stride
-            NULL);
-}
+GLuint load_tex(char *fname) { // load a texture from a filename
+    FILE *imgf = fopen("t/tex.tga", "r");
+    img_t *i = loadf_img(imgf);
+    fclose(imgf);
 
-void draw_buf(GLuint vb, GLuint nb, GLuint uvb, unsigned int len) {
-    enable_attrib(0, vb, 3);
-    enable_attrib(1, nb, 3);
-    if(uvb) enable_attrib(2, uvb, 2);
-
-    glDrawArrays(GL_TRIANGLES, 0, len);
-    glDisableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
-    if(uvb) glDisableVertexAttribArray(2);
+    return load_texi(i);
 }
 
 void clear(GLfloat r, GLfloat g, GLfloat b) {
@@ -228,6 +142,7 @@ void clear(GLfloat r, GLfloat g, GLfloat b) {
 }
 
 img_t *loadf_img(FILE *f) {
+    ENSURE(f, return NULL, "failed to load image");
     img_t *i = malloc(sizeof(img_t));
     int n;
     i->data = stbi_load_from_file(f, &(i->w), &(i->h), &n, 3);

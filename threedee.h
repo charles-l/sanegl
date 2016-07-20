@@ -10,39 +10,11 @@
 #include <string.h>
 #include "linmath.h"
 
-// Some of these `#define`s might need to be tweaked, depending on the complexity of your scenes.
-#define MAX_VERTS 20000
-#define MAX_POLYS 20000
-// Max number of objects in a single file
-#define MAX_OBJS 16
-
-// **Polygon type**
 typedef struct {
-    // `a`, `b`, and `c` map to the indexes of vertices in another array
-    int a, b, c;
-} poly_t;
+    GLuint vao;
+    size_t vn; // number of vertices
+} mesh_t;
 
-// **Texture Map coordinates**
-typedef struct {
-    float u, v;
-} mapco_t;
-
-// **3D Object**
-typedef struct {
-    poly_t *polygon;
-    vec3 *vertex;
-    mapco_t *mapcoord;
-    // Number of vertices
-    int vlen;
-    // Number of polygons
-    int plen;
-    // Texture id if the file contains multiple images
-    int tex_id;
-    // name of the object
-    char name[20];
-} obj_t;
-
-// **Image type**
 typedef struct {
     // Raw image data
     char *data;
@@ -50,28 +22,18 @@ typedef struct {
     int h;
 } img_t;
 
-// Loads an array of 3D objects from a `.3ds` file, and returns the array.
-obj_t **load_3ds_objs(char *fname);
-// Free a single object
-void free_obj(obj_t *o);
-// Free the whole returned obj array
-void free_objs(obj_t **o);
 // Create an OpenGL shader from a string and return the shader id.
 GLuint load_shader(const char *s, int type);
-// Create a program from a compiled vertex shader and fragment shader. Returns the program id.
+// Create a program from a compiled vertex shader and fragment shader. `glDelete`s the two shaders passed to it. Returns the program id.
 GLuint make_program(GLuint v_shader, GLuint f_shader);
 // Initialize the OpenGL scene (assuming a context has been created)
 void init_threedee();
-// Create a vertex array object (must be called before `create_buf`). Returns the VAO id.
-GLuint create_va();
-// Create a vertex buffer object. Returns the VBO id.
-GLuint create_buf(GLfloat *data, size_t size);
-// Create a texture buffer
-GLuint create_tex(img_t *i);
-// Enable a vertex attribute (handled internally)
-void enable_attrib(GLuint attrib, GLuint buf_id, GLint len);
-// Draw an object from a vertex buffer, normal buffer and uv buffer
-void draw_buf(GLuint vb, GLuint nb, GLuint uvb, unsigned int len);
+// Create a texture buffer from image data
+GLuint load_texi(img_t *i);
+// Create a texture buffer from a filename
+GLuint load_tex(char *filename);
+// Draw an object from a VAO
+void draw_vao(GLuint vao, unsigned int len);
 // Clear the screen with a color
 void clear(GLfloat r, GLfloat g, GLfloat b);
 // Load an image from a file.
@@ -80,5 +42,20 @@ img_t *loadf_img(FILE *f);
 img_t *loadb_img(char *d, int len);
 // Free an image
 void free_img(img_t *i);
+
+// ** Low Level Functionality **
+// This stuff is used internally, but exposed in case you need/want low-level control
+
+// Create a vertex array object (must be called before `create_buf`). Returns the VAO id.
+GLuint create_vao();
+
+// Create a vertex buffer object. Returns the VBO's id.
+//
+// * `data` - the raw vertex data in a one dimensional array
+// * `size` - the actual size of data
+// * `vertex_size` - the number of floats per vertex (3 for position/normal, 2 for uv)
+// * `attribi` - the attrib pointer index of the new buffer
+//
+GLuint create_buf(GLfloat *data, size_t size, GLuint vertex_size, GLuint attribi);
 
 #endif
