@@ -21,6 +21,10 @@ float mouse_speed = 0.005f;
 int width = 800;
 int height = 600;
 
+struct materal_t {
+    GLuint prog;
+};
+
 void calc_mvp(mat4x4 mvp, mat4x4 model, vec3 pos, vec3 goal, vec3 up, float fov, float width, float height) {
     // this horrible mess is what makes objects move in 3D space. Hoorah. CAN YOU FEEL THE MATH YET?!!!
     mat4x4 proj;
@@ -193,8 +197,6 @@ int main() {
     mesh_t cube = create_mesh(box, box, box_uv, 36);
     GLuint cube_texture = load_tex("t/tex.tga");
 
-    glBindVertexArray(0);
-
     mesh_t skybox = create_mesh(skybox_data, skybox_data, NULL, 36);
     GLuint skybox_texture;
 
@@ -218,23 +220,21 @@ int main() {
                       out vec2 UV; \
                       void main() { \
                           gl_Position = MVP * vec4(v_pos, 1); \
-                              UV = v_uv; \
+                          UV = v_uv; \
                       }";
 
     char *f_shader = "#version 330 \n\
                       in vec2 UV; \
-                      out vec3 color; \
+                      out vec4 color; \
                       uniform sampler2D tex; \
                       void main() { \
-                          color = texture(tex, UV).rgb; \
+                          color = vec4(texture(tex, UV).rgb, 1.0); \
                       }";
 
     GLuint p = make_program(load_shader(v_shader, GL_VERTEX_SHADER), load_shader(f_shader, GL_FRAGMENT_SHADER));
 
     v_shader = "#version 330 core \n\
                 layout(location = 0) in vec3 v_pos; \
-                layout(location = 1) in vec3 v_normal; \
-                layout(location = 2) in vec2 v_uv; \
                 uniform mat4 MVP;\
                 out vec3 pos; \
                 void main() { \
@@ -265,22 +265,24 @@ int main() {
 
         calc_mvp(mvp, model, (vec3){4,3,-3}, (vec3){0,0,0}, (vec3){0,1,0}, 45.f, width, height);
 
-        GLuint mvp_id = glGetUniformLocation(p, "MVP");
-        glUniformMatrix4fv(mvp_id, 1, GL_FALSE, &mvp[0][0]);
-
         clear(0.0, 0.1, 0.3);
 
         // skybox
         glUseProgram(p2);
+
+        glUniformMatrix4fv(glGetUniformLocation(p2, "MVP"), 1, GL_FALSE, &mvp[0][0]);
         glDepthMask(GL_FALSE);
         glBindVertexArray(skybox.vao);
         glActiveTexture(GL_TEXTURE0);
-        glUniform1i(glGetUniformLocation(p, "skybox"), 0);
+        glUniform1i(glGetUniformLocation(p2, "skybox"), 0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, skybox_texture);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glDepthMask(GL_TRUE);
 
-        //glUseProgram(p);
+        glUseProgram(0);
+
+        glUseProgram(p);
+        glUniformMatrix4fv(glGetUniformLocation(p, "MVP"), 1, GL_FALSE, &mvp[0][0]);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, cube_texture);

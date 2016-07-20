@@ -1,0 +1,6 @@
+* lighting (dynamic with shadows)
+* PBR CUZ WE NEED REALIZM
+* normal map
+* bump map
+* parallax occlusion WITH MAGIC SILHOUETTE STUFF: https://developer.nvidia.com/gpugems/GPUGems3/gpugems3_ch04.html
+* make things fast. 'cause. you know. speed 'n' stuff
