@@ -12,6 +12,6 @@ demo:
 	cd t; rm demo; cc $(CFLAGS) -o demo demo.c -lGLU -lGL -lglut -lm -lglfw -lGLEW
 
 docs:
-	pycco -d docs threedee.h
+	pycco -d docs *.h
 
 .PHONY: docs
