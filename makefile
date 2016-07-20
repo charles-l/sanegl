@@ -13,5 +13,6 @@ demo:
 
 docs:
 	pycco -d docs *.h
+	ls *.h | xargs -I% echo '*' "[%](%tml)" | smu > docs/doc_index.html
 
 .PHONY: docs
