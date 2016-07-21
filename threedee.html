@@ -179,11 +179,10 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-12'>#</a>
       </div>
-      <p><strong> Low Level Functionality </strong>
-This stuff is used internally, but exposed in case you need/want low-level control</p>
+      <p>Create a mesh from an array of vertices, normals and uvs</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre></pre></div>
+      <div class="highlight"><pre><span class="n">mesh_t</span> <span class="nf">create_mesh</span><span class="p">(</span><span class="kt">float</span> <span class="o">*</span><span class="n">vertices</span><span class="p">,</span> <span class="kt">float</span> <span class="o">*</span><span class="n">normals</span><span class="p">,</span> <span class="kt">float</span> <span class="o">*</span><span class="n">uvs</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">vn</span><span class="p">);</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -192,10 +191,10 @@ This stuff is used internally, but exposed in case you need/want low-level contr
       <div class='octowrap'>
         <a class='octothorpe' href='#section-13'>#</a>
       </div>
-      <p>Create a vertex array object (must be called before <code>create_buf</code>). Returns the VAO id.</p>
+      <p>Draw a mesh</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="n">GLuint</span> <span class="nf">create_vao</span><span class="p">();</span></pre></div>
+      <div class="highlight"><pre><span class="kt">void</span> <span class="nf">draw_mesh</span><span class="p">(</span><span class="n">mesh_t</span> <span class="o">*</span><span class="n">m</span><span class="p">);</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -203,6 +202,31 @@ This stuff is used internally, but exposed in case you need/want low-level contr
     <div class='docs'>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-14'>#</a>
+      </div>
+      <p><strong> Low Level Functionality </strong>
+This stuff is used internally, but exposed in case you need/want low-level control</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-15'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-15'>#</a>
+      </div>
+      <p>Create a vertex array object (must be called before <code>create_buf</code>). Returns the VAO id.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">GLuint</span> <span class="nf">create_vao</span><span class="p">();</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-16'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-16'>#</a>
       </div>
       <p>Create a vertex buffer object. Returns the VBO's id.</p>
 <ul>
