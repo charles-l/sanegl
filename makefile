@@ -9,7 +9,7 @@ install:
 	install $(OUT) /usr/local/lib
 
 demo:
-	cd t; rm demo; cc $(CFLAGS) -o demo demo.c -lGLU -lGL -lglut -lm -lglfw -lGLEW
+	cd t; rm demo; cc $(CFLAGS) -o demo demo.c ../threedee.c ../mesh_loader.c -lGLU -lGL -lglut -lm -lglfw -lGLEW
 
 docs:
 	pycco -d docs *.h

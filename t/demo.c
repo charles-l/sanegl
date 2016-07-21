@@ -1,4 +1,5 @@
-#include "threedee.c"
+#include "threedee.h"
+#include "mesh_loader.h"
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glew.h>
@@ -23,6 +24,10 @@ int height = 600;
 
 struct materal_t {
     GLuint prog;
+    float reflectivity;
+    float diffuse;
+    float roughness;
+    float fresnal;
 };
 
 void calc_mvp(mat4x4 mvp, mat4x4 model, vec3 pos, vec3 goal, vec3 up, float fov, float width, float height) {
@@ -55,45 +60,6 @@ int main() {
     ////
 
     // MODELS
-
-    GLfloat box[] = {
-        -1.0f,-1.0f,-1.0f, // triangle 1 : begin
-        -1.0f,-1.0f, 1.0f,
-        -1.0f, 1.0f, 1.0f, // triangle 1 : end
-        1.0f, 1.0f,-1.0f, // triangle 2 : begin
-        -1.0f,-1.0f,-1.0f,
-        -1.0f, 1.0f,-1.0f, // triangle 2 : end
-        1.0f,-1.0f, 1.0f,
-        -1.0f,-1.0f,-1.0f,
-        1.0f,-1.0f,-1.0f,
-        1.0f, 1.0f,-1.0f,
-        1.0f,-1.0f,-1.0f,
-        -1.0f,-1.0f,-1.0f,
-        -1.0f,-1.0f,-1.0f,
-        -1.0f, 1.0f, 1.0f,
-        -1.0f, 1.0f,-1.0f,
-        1.0f,-1.0f, 1.0f,
-        -1.0f,-1.0f, 1.0f,
-        -1.0f,-1.0f,-1.0f,
-        -1.0f, 1.0f, 1.0f,
-        -1.0f,-1.0f, 1.0f,
-        1.0f,-1.0f, 1.0f,
-        1.0f, 1.0f, 1.0f,
-        1.0f,-1.0f,-1.0f,
-        1.0f, 1.0f,-1.0f,
-        1.0f,-1.0f,-1.0f,
-        1.0f, 1.0f, 1.0f,
-        1.0f,-1.0f, 1.0f,
-        1.0f, 1.0f, 1.0f,
-        1.0f, 1.0f,-1.0f,
-        -1.0f, 1.0f,-1.0f,
-        1.0f, 1.0f, 1.0f,
-        -1.0f, 1.0f,-1.0f,
-        -1.0f, 1.0f, 1.0f,
-        1.0f, 1.0f, 1.0f,
-        -1.0f, 1.0f, 1.0f,
-        1.0f,-1.0f, 1.0f
-    };
 
     GLfloat box_uv[] = {
         0.000059f, 1.0f-0.000004f,
@@ -194,8 +160,33 @@ int main() {
         fclose(f);
     }
 
-    mesh_t cube = create_mesh(box, box, box_uv, 36);
-    GLuint cube_texture = load_tex("t/tex.tga");
+    raw_mesh_t *o = load_3ds_objs("t/monkey.3ds");
+
+    float x[8172];
+    size_t xn = sizeof(x) / (sizeof(float) * 3);
+    float *y = x - 1;
+    for(int i = 0; i < o[0].plen; i++) {
+        polygon_t p = o[0].polygons[i];
+        *(++y) = o[0].vertices[p.a][0];
+        *(++y) = o[0].vertices[p.a][1];
+        *(++y) = o[0].vertices[p.a][2];
+        //printf("%i: p.a %f %f %f\n", i, UNPACK3(o[0].vertices[p.a]));
+
+        *(++y) = o[0].vertices[p.b][0];
+        *(++y) = o[0].vertices[p.b][1];
+        *(++y) = o[0].vertices[p.b][2];
+        //printf("%i: p.b %f %f %f\n", i, UNPACK3(o[0].vertices[p.b]));
+
+        *(++y) = o[0].vertices[p.c][0];
+        *(++y) = o[0].vertices[p.c][1];
+        *(++y) = o[0].vertices[p.c][2];
+        //printf("%i: p.c %f %f %f\n", i, UNPACK3(o[0].vertices[p.c]));
+    }
+
+    free(o);
+
+    mesh_t monkey = create_mesh(x, NULL, NULL, xn);
+    GLuint monkey_tex = load_tex("t/tex.tga");
 
     mesh_t skybox = create_mesh(skybox_data, skybox_data, NULL, 36);
     GLuint skybox_texture;
@@ -218,8 +209,10 @@ int main() {
                       layout(location = 2) in vec2 v_uv; \
                       uniform mat4 MVP; \
                       out vec2 UV; \
+                      out vec3 pos; \
                       void main() { \
                           gl_Position = MVP * vec4(v_pos, 1); \
+                          pos = v_pos; \
                           UV = v_uv; \
                       }";
 
@@ -279,16 +272,15 @@ int main() {
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glDepthMask(GL_TRUE);
 
-        glUseProgram(0);
-
         glUseProgram(p);
         glUniformMatrix4fv(glGetUniformLocation(p, "MVP"), 1, GL_FALSE, &mvp[0][0]);
 
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, cube_texture);
+        glBindTexture(GL_TEXTURE_2D, monkey_tex);
         glUniform1i(glGetUniformLocation(p, "tex"), 0);
 
-        draw_mesh(&cube);
+        draw_mesh(&monkey);
         glfwSwapBuffers((GLFWwindow *) w);
     } while (glfwGetKey(w, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(w) == 0);
+    return 0;
 }
