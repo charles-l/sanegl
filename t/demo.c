@@ -10,9 +10,9 @@
 // used for debug:
 #define PRINTVEC(v) printf(#v ": %f %f %f\n", UNPACK3(v));
 
-vec3 dir = {0, 0, 0};
-vec3 up = {0};
-vec3 position = {0, 0, 5};
+v3 dir = {0, 0, 0};
+v3 up = {0};
+v3 position = {0, 0, 5};
 float h_angle = 3.14f;
 float v_angle = 0.0;
 float fov = 45.0f;
@@ -30,7 +30,7 @@ struct materal_t {
     float fresnal;
 };
 
-void calc_mvp(mat4x4 mvp, mat4x4 model, vec3 pos, vec3 goal, vec3 up, float fov, float width, float height) {
+void calc_mvp(mat4x4 mvp, mat4x4 model, v3 pos, v3 goal, v3 up, float fov, float width, float height) {
     // this horrible mess is what makes objects move in 3D space. Hoorah. CAN YOU FEEL THE MATH YET?!!!
     mat4x4 proj;
     mat4x4 view;
@@ -256,7 +256,7 @@ int main() {
         printf("%fms\n", dt * 1000);
         last_time = glfwGetTime(); // set last time
 
-        calc_mvp(mvp, model, (vec3){4,3,-3}, (vec3){0,0,0}, (vec3){0,1,0}, 45.f, width, height);
+        calc_mvp(mvp, model, (v3){4,3,-3}, (v3){0,0,0}, (v3){0,1,0}, 45.f, width, height);
 
         clear(0.0, 0.1, 0.3);
 

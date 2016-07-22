@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "linmath.h"
+#include "sgl_math.h"
 
 // Some of these `#define`s might need to be tweaked, depending on the complexity of your scenes.
 #define MAX_VERTS 20000
@@ -25,7 +25,8 @@ typedef struct {
 // **3D Object**
 typedef struct {
     polygon_t polygons[MAX_POLYS];
-    vec3 vertices[MAX_VERTS];
+    v3 vertices[MAX_VERTS];
+    v3 normals[MAX_VERTS];
     uv_t uvs[MAX_VERTS];
 
     // Number of vertices

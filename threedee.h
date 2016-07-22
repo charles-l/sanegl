@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "linmath.h"
+#include "sgl_math.h"
 
 typedef struct {
     GLuint vao;

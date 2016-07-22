@@ -1,4 +1,5 @@
 #include "mesh_loader.h"
+#include "sgl_math.h"
 
 inline static size_t get_fsize(FILE *f) {
     fseek(f, 0L, SEEK_END);
@@ -78,4 +79,13 @@ raw_mesh_t *load_3ds_objs(char *fname) {
     }
     fclose(f);
     return objs;
+}
+
+void gen_normals(raw_mesh_t *m) {
+    for(int i = 0; i < m->plen; i++) {
+        polygon_t *p = &(m->polygons[i]);
+        v3 u = (v3) m->vertices[p->a] - (v3) m->vertices[p->b];
+        v4 v = m->vertices[p->c] - m->vertices[p->b];
+        //m->normals[p->a]
+    }
 }
