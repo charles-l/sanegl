@@ -1,5 +1,5 @@
 OUT=libthreedee.a
-CFLAGS=-std=c99 -I../
+CFLAGS=-std=c99 -I../ -g
 
 all:
 	cc $(CFLAGS) -c threedee.c -lm -o threedee.o

@@ -153,7 +153,6 @@ int main() {
         name[0] = '\0';
         strcat(name, "t/skybox/");
         sprintf(name, "%s%i.tga", name, i);
-
         puts(name);
         FILE *f = fopen(name, "r");
         cubemap[i] = loadf_img(f);
@@ -161,31 +160,50 @@ int main() {
     }
 
     raw_mesh_t *o = load_3ds_objs("t/monkey.3ds");
+    gen_normals(&(o[0]));
 
     float x[8172];
+    float nx[8172];
     size_t xn = sizeof(x) / (sizeof(float) * 3);
-    float *y = x - 1;
+    float *v = x - 1;
+    float *n = nx - 1;
+    // TODO: figure out these segfaults
     for(int i = 0; i < o[0].plen; i++) {
         polygon_t p = o[0].polygons[i];
-        *(++y) = o[0].vertices[p.a][0];
-        *(++y) = o[0].vertices[p.a][1];
-        *(++y) = o[0].vertices[p.a][2];
-        //printf("%i: p.a %f %f %f\n", i, UNPACK3(o[0].vertices[p.a]));
+        *(++v) = o[0].vertices[p.a][0];
+        *(++v) = o[0].vertices[p.a][1];
+        *(++v) = o[0].vertices[p.a][2];
 
-        *(++y) = o[0].vertices[p.b][0];
-        *(++y) = o[0].vertices[p.b][1];
-        *(++y) = o[0].vertices[p.b][2];
-        //printf("%i: p.b %f %f %f\n", i, UNPACK3(o[0].vertices[p.b]));
+        *(++v) = o[0].vertices[p.b][0];
+        *(++v) = o[0].vertices[p.b][1];
+        *(++v) = o[0].vertices[p.b][2];
 
-        *(++y) = o[0].vertices[p.c][0];
-        *(++y) = o[0].vertices[p.c][1];
-        *(++y) = o[0].vertices[p.c][2];
-        //printf("%i: p.c %f %f %f\n", i, UNPACK3(o[0].vertices[p.c]));
+        *(++v) = o[0].vertices[p.c][0];
+        *(++v) = o[0].vertices[p.c][1];
+        *(++v) = o[0].vertices[p.c][2];
+
+        ////
+
+        *(++n) = o[0].normals[p.a][0];
+        *(++n) = o[0].normals[p.a][1];
+        *(++n) = o[0].normals[p.a][2];
+
+        *(++n) = o[0].normals[p.b][0];
+        *(++n) = o[0].normals[p.b][1];
+        *(++n) = o[0].normals[p.b][2];
+
+        *(++n) = o[0].normals[p.c][0];
+        *(++n) = o[0].normals[p.c][1];
+        *(++n) = o[0].normals[p.c][2];
+
+        //printf("%i: p.a %f %f %f\n", i, UNPACK3(o[0].normals[p.a]));
+        //printf("%i: p.b %f %f %f\n", i, UNPACK3(o[0].normals[p.b]));
+        //printf("%i: p.c %f %f %f\n", i, UNPACK3(o[0].normals[p.c]));
     }
 
     free(o);
 
-    mesh_t monkey = create_mesh(x, NULL, NULL, xn);
+    mesh_t monkey = create_mesh(x, nx, NULL, xn);
     GLuint monkey_tex = load_tex("t/tex.tga");
 
     mesh_t skybox = create_mesh(skybox_data, skybox_data, NULL, 36);

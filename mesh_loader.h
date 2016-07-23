@@ -43,4 +43,7 @@ typedef struct {
 // **NOTE**: you must remember to free the array when you're finished!
 raw_mesh_t *load_3ds_objs(char *fname);
 
+// Generates calculated smooth normals to a raw_mesh
+void gen_normals(raw_mesh_t *m);
+
 #endif // MESH_LOADER_H
