@@ -162,8 +162,8 @@ int main() {
     raw_mesh_t *o = load_3ds_objs("t/monkey.3ds");
     gen_normals(&(o[0]));
 
-    float x[8172];
-    float nx[8172];
+    float x[8173];
+    float nx[8173];
     size_t xn = sizeof(x) / (sizeof(float) * 3);
     float *v = x - 1;
     float *n = nx - 1;
@@ -196,9 +196,9 @@ int main() {
         *(++n) = o[0].normals[p.c][1];
         *(++n) = o[0].normals[p.c][2];
 
-        //printf("%i: p.a %f %f %f\n", i, UNPACK3(o[0].normals[p.a]));
-        //printf("%i: p.b %f %f %f\n", i, UNPACK3(o[0].normals[p.b]));
-        //printf("%i: p.c %f %f %f\n", i, UNPACK3(o[0].normals[p.c]));
+        printf("%i: p.a %f %f %f\n", i, UNPACK3(o[0].normals[p.a]));
+        printf("%i: p.b %f %f %f\n", i, UNPACK3(o[0].normals[p.b]));
+        printf("%i: p.c %f %f %f\n", i, UNPACK3(o[0].normals[p.c]));
     }
 
     free(o);
@@ -227,19 +227,20 @@ int main() {
                       layout(location = 2) in vec2 v_uv; \
                       uniform mat4 MVP; \
                       out vec2 UV; \
-                      out vec3 pos; \
+                      out vec3 norm; \
                       void main() { \
                           gl_Position = MVP * vec4(v_pos, 1); \
-                          pos = v_pos; \
+                          norm = normalize(v_normal); \
                           UV = v_uv; \
                       }";
 
     char *f_shader = "#version 330 \n\
                       in vec2 UV; \
+                      in vec3 norm; \
                       out vec4 color; \
                       uniform sampler2D tex; \
                       void main() { \
-                          color = vec4(texture(tex, UV).rgb, 1.0); \
+                          color = vec4(norm, 1.0); \
                       }";
 
     GLuint p = make_program(load_shader(v_shader, GL_VERTEX_SHADER), load_shader(f_shader, GL_FRAGMENT_SHADER));
