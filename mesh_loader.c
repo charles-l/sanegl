@@ -85,7 +85,10 @@ void gen_normals(raw_mesh_t *m) {
     for(int i = 0; i < m->plen; i++) {
         polygon_t *p = &(m->polygons[i]);
         v3 u = (v3) m->vertices[p->a] - (v3) m->vertices[p->b];
-        v4 v = m->vertices[p->c] - m->vertices[p->b];
+        v3 v = m->vertices[p->c] - m->vertices[p->b];
+        m->binormals[p->a] += v;
+        m->binormals[p->b] += v;
+        m->binormals[p->c] += v;
         m->normals[p->a] += v3_cross(u, v);
         m->normals[p->b] += v3_cross(u, v);
         m->normals[p->c] += v3_cross(u, v);

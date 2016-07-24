@@ -64,18 +64,20 @@ void init_threedee() {
     glDepthFunc(GL_LESS);
 }
 
-mesh_t create_mesh(float *vertices, float *normals, float *uvs, size_t vn) {
+mesh_t create_mesh(float *vertices, float *normals, float *binormals, float *uvs, size_t vn) {
     mesh_t r;
     r.vn = vn;
     r.vao = create_vao();
-    GLuint v = 0, n = 0, u = 0;
+    GLuint v = 0, n = 0, u = 0, bn = 0;
     v = create_buf(vertices, 3 * vn * sizeof(float), 3, 0);
     if(normals) n = create_buf(normals, 3 * vn * sizeof(float), 3, 1);
-    if(uvs) u = create_buf(uvs, 2 * vn * sizeof(float), 2, 2);
+    if(binormals) bn = create_buf(binormals, 3 * vn * sizeof(float), 3, 2);
+    if(uvs) u = create_buf(uvs, 2 * vn * sizeof(float), 2, 3);
     glBindVertexArray(0);
-    glDeleteBuffers(1, &v); // cleanup i guess. i actually have no idea if this speeds things up. MY COPY PASTA IS SHOWING! LOOK AWAY
-    glDeleteBuffers(1, &n); // avert your eyes plz
-    glDeleteBuffers(1, &u); // seriously. its embarrassing
+    glDeleteBuffers(1, &v); // cleanup i guess. i actually have no idea if this speeds things up. MY COPY PASTA IS SHOWING!
+    glDeleteBuffers(1, &n);
+    glDeleteBuffers(1, &u);
+    glDeleteBuffers(1, &bn);
     return r;
 }
 

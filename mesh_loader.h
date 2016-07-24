@@ -27,6 +27,7 @@ typedef struct {
     polygon_t polygons[MAX_POLYS];
     v3 vertices[MAX_VERTS];
     v3 normals[MAX_VERTS];
+    v3 binormals[MAX_VERTS];
     uv_t uvs[MAX_VERTS];
 
     // Number of vertices

@@ -162,11 +162,13 @@ int main() {
     raw_mesh_t *o = load_3ds_objs("t/monkey.3ds");
     gen_normals(&(o[0]));
 
-    float x[8173];
-    float nx[8173];
+    float x[8596];
+    float nx[8596];
+    float bnx[8596];
     size_t xn = sizeof(x) / (sizeof(float) * 3);
     float *v = x - 1;
     float *n = nx - 1;
+    float *bn = bnx - 1;
     // TODO: figure out these segfaults
     for(int i = 0; i < o[0].plen; i++) {
         polygon_t p = o[0].polygons[i];
@@ -182,7 +184,7 @@ int main() {
         *(++v) = o[0].vertices[p.c][1];
         *(++v) = o[0].vertices[p.c][2];
 
-        ////
+        ///
 
         *(++n) = o[0].normals[p.a][0];
         *(++n) = o[0].normals[p.a][1];
@@ -196,6 +198,20 @@ int main() {
         *(++n) = o[0].normals[p.c][1];
         *(++n) = o[0].normals[p.c][2];
 
+        ///
+
+        *(++bn) = o[0].binormals[p.a][0];
+        *(++bn) = o[0].binormals[p.a][1];
+        *(++bn) = o[0].binormals[p.a][2];
+
+        *(++bn) = o[0].binormals[p.b][0];
+        *(++bn) = o[0].binormals[p.b][1];
+        *(++bn) = o[0].binormals[p.b][2];
+
+        *(++bn) = o[0].binormals[p.c][0];
+        *(++bn) = o[0].binormals[p.c][1];
+        *(++bn) = o[0].binormals[p.c][2];
+
         printf("%i: p.a %f %f %f\n", i, UNPACK3(o[0].normals[p.a]));
         printf("%i: p.b %f %f %f\n", i, UNPACK3(o[0].normals[p.b]));
         printf("%i: p.c %f %f %f\n", i, UNPACK3(o[0].normals[p.c]));
@@ -203,10 +219,10 @@ int main() {
 
     free(o);
 
-    mesh_t monkey = create_mesh(x, nx, NULL, xn);
+    mesh_t monkey = create_mesh(x, nx, bnx, NULL, xn);
     GLuint monkey_tex = load_tex("t/tex.tga");
 
-    mesh_t skybox = create_mesh(skybox_data, skybox_data, NULL, 36);
+    mesh_t skybox = create_mesh(skybox_data, skybox_data, NULL, NULL, 36);
     GLuint skybox_texture;
 
     glGenTextures(1, &skybox_texture);
@@ -224,7 +240,8 @@ int main() {
     char *v_shader = "#version 330 core \n\
                       layout(location = 0) in vec3 v_pos; \
                       layout(location = 1) in vec3 v_normal; \
-                      layout(location = 2) in vec2 v_uv; \
+                      layout(location = 2) in vec3 v_binormal; \
+                      layout(location = 3) in vec2 v_uv; \
                       uniform mat4 MVP; \
                       out vec2 UV; \
                       out vec3 norm; \
