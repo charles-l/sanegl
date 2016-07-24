@@ -1,6 +1,7 @@
 #include "threedee.h"
 #include "mesh_loader.h"
 #include <GL/gl.h>
+#include <err.h>
 #include <GL/glu.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -162,9 +163,9 @@ int main() {
     raw_mesh_t *o = load_3ds_objs("t/monkey.3ds");
     gen_normals(&(o[0]));
 
-    float x[8596];
-    float nx[8596];
-    float bnx[8596];
+    float x[8711];
+    float nx[8711];
+    float bnx[8711];
     size_t xn = sizeof(x) / (sizeof(float) * 3);
     float *v = x - 1;
     float *n = nx - 1;
