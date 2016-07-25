@@ -238,7 +238,7 @@ int main() {
 
     // TODO: normal map
     // TODO: shadow map
-    GLuint p = make_program(load_shader("t/v_shader.glsl", GL_VERTEX_SHADER), load_shader("t/f_shader.glsl", GL_FRAGMENT_SHADER));
+    GLuint p = make_program(load_shader("t/v_shader.glsl", GL_VERTEX_SHADER), load_shader("t/pbr.glsl", GL_FRAGMENT_SHADER));
     GLuint p2 = make_program(load_shader("t/v_skybox.glsl", GL_VERTEX_SHADER), load_shader("t/skybox.glsl", GL_FRAGMENT_SHADER));
 
     mat4x4 model = {0};
