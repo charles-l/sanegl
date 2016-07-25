@@ -21,11 +21,21 @@ static void show_info_log( // "da frick is this ugly thing", you ask? welcome to
     free(log);
 }
 
-GLuint load_shader(const char *s, int type) {
+GLuint load_shader(const char *filename, int type) {
+    FILE *f = fopen(filename, "r");
+    ENSURE(f, return 0, "can't load file: %s", filename);
+    fseek(f, 0, SEEK_END);
+    int fsize = ftell(f);
+    rewind(f);
+    char *s = malloc(sizeof(char) * fsize);
+    fread(s, sizeof(char), fsize, f);
+    fclose(f);
+
     GLuint shader = glCreateShader(type);
-    GLint len = strlen(s);
-    glShaderSource(shader, 1, (const GLchar **) &s, &len); // HAHAHAH SO OPENGL DOESNT KNOW HOW TO USE STRINGS WITH NULL TERMINATORS HYSTERICAL
+    glShaderSource(shader, 1, (const GLchar **) &s, &fsize); // HAHAHAH SO OPENGL DOESNT KNOW HOW TO USE STRINGS WITH NULL TERMINATORS HYSTERICAL
     glCompileShader(shader);
+
+    free(s);
 
     // yes. Error checking takes lots of lines. Goodbye low sloc. Thank you OpenGL >:(
     int status;

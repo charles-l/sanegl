@@ -212,9 +212,9 @@ int main() {
         *(++bn) = o[0].binormals[p.c][1];
         *(++bn) = o[0].binormals[p.c][2];
 
-        printf("%i: p.a %f %f %f\n", i, UNPACK3(o[0].normals[p.a]));
-        printf("%i: p.b %f %f %f\n", i, UNPACK3(o[0].normals[p.b]));
-        printf("%i: p.c %f %f %f\n", i, UNPACK3(o[0].normals[p.c]));
+        //printf("%i: p.a %f %f %f\n", i, UNPACK3(o[0].normals[p.a]));
+        //printf("%i: p.b %f %f %f\n", i, UNPACK3(o[0].normals[p.b]));
+        //printf("%i: p.c %f %f %f\n", i, UNPACK3(o[0].normals[p.c]));
     }
 
     free(o);
@@ -237,49 +237,8 @@ int main() {
 
     // TODO: normal map
     // TODO: shadow map
-    char *v_shader = "#version 330 core \n\
-                      layout(location = 0) in vec3 v_pos; \
-                      layout(location = 1) in vec3 v_normal; \
-                      layout(location = 2) in vec3 v_binormal; \
-                      layout(location = 3) in vec2 v_uv; \
-                      uniform mat4 MVP; \
-                      out vec2 UV; \
-                      out vec3 norm; \
-                      void main() { \
-                          gl_Position = MVP * vec4(v_pos, 1); \
-                          norm = normalize(v_normal); \
-                          UV = v_uv; \
-                      }";
-
-    char *f_shader = "#version 330 \n\
-                      in vec2 UV; \
-                      in vec3 norm; \
-                      out vec4 color; \
-                      uniform sampler2D tex; \
-                      void main() { \
-                          color = vec4(norm, 1.0); \
-                      }";
-
-    GLuint p = make_program(load_shader(v_shader, GL_VERTEX_SHADER), load_shader(f_shader, GL_FRAGMENT_SHADER));
-
-    v_shader = "#version 330 core \n\
-                layout(location = 0) in vec3 v_pos; \
-                uniform mat4 MVP;\
-                out vec3 pos; \
-                void main() { \
-                    gl_Position = MVP * vec4(v_pos, 1); \
-                    pos = v_pos; \
-                }";
-
-    f_shader = "#version 330 \n\
-                in vec3 pos; \
-                out vec3 color; \
-                uniform samplerCube skybox; \
-                void main() { \
-                    color = texture(skybox, pos).rgb; \
-                }";
-
-    GLuint p2 = make_program(load_shader(v_shader, GL_VERTEX_SHADER), load_shader(f_shader, GL_FRAGMENT_SHADER));
+    GLuint p = make_program(load_shader("t/v_shader.glsl", GL_VERTEX_SHADER), load_shader("t/f_shader.glsl", GL_FRAGMENT_SHADER));
+    GLuint p2 = make_program(load_shader("t/v_skybox.glsl", GL_VERTEX_SHADER), load_shader("t/skybox.glsl", GL_FRAGMENT_SHADER));
 
     mat4x4 model = {0};
     mat4x4_diag(model, 1.f);
