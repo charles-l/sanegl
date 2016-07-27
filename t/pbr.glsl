@@ -1,4 +1,5 @@
 #version 330
+// taken from wikipedia
 
 in vec2 v_texcoord;
 in vec3 v_normal;
@@ -7,14 +8,23 @@ in vec3 v_pos;
 
 out vec4 result;
 
-uniform int mode;
-
 const vec3 lightPos = vec3(1.0,1.0,1.0);
 const vec3 ambientColor = vec3(0.1, 0.0, 0.0);
 const vec3 diffuseColor = vec3(0.5, 0.0, 0.0);
 const vec3 specColor = vec3(1.0, 1.0, 1.0);
 const float shininess = 16.0;
 const float screenGamma = 2.2; // Assume the monitor is calibrated to the sRGB color space
+
+float lambert(vec3 lightDir, vec3 normal) {
+    return max(0.0, dot(lightDir, normal));
+}
+
+float ggx(float rough, float noh) {
+    float m = rough * rough;
+    float m2 = m * m;
+    float d = (noh * m2 - noh) * noh + 1;
+    return m2 / (d*d);
+}
 
 void main() {
     vec3 normal = normalize(v_normal);
@@ -25,20 +35,12 @@ void main() {
 
     if(lambertian > 0.0) {
 
-        vec3 viewDir = normalize(-v_pos);
+        vec3 V = normalize(-v_pos);
+        vec3 L = normalize(lightPos - v_pos);
+        vec3 H = normalize(L + V);
 
-        // this is blinn phong
-        vec3 halfDir = normalize(lightDir + viewDir);
-        float specAngle = max(dot(halfDir, normal), 0.0);
-        specular = pow(specAngle, shininess);
-
-        // this is phong (for comparison)
-        if(mode == 2) {
-            vec3 reflectDir = reflect(-lightDir, normal);
-            specAngle = max(dot(reflectDir, viewDir), 0.0);
-            // note that the exponent is different here
-            specular = pow(specAngle, shininess/4.0);
-        }
+        float specAngle = max(dot(H, normal), 0.0);
+        specular = ggx(shininess, specAngle);
     }
     vec3 colorLinear = ambientColor +
         lambertian * diffuseColor +
