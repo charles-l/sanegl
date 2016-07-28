@@ -1,15 +1,20 @@
 #version 330
-
 precision highp float; //set default precision in glsl es 2.0
+
+#define PI 3.141592653
 
 in vec2 v_texcoord;
 in vec3 v_normal;
 in vec3 v_binormal;
 in vec3 v_pos;
 
-vec3 lightPos = vec3(4.0, 3.0, -3.0);
-vec3 camPos = vec3(4.0, 3.0, -3.0);
+vec3 light_pos = vec3(4.0, 3.0, -3.0);
+vec3 cam_pos = vec3(4.0, 3.0, -3.0);
+vec3 light_col = vec3(0.3, 1.0, 1.0);
+vec3 base = vec3(1.0, 1.0, 1.0);
 out vec4 result;
+
+float metallic = 0.4;
 
 float ggx(float NdotH, float rough) {
     float m = rough * rough;
@@ -18,40 +23,55 @@ float ggx(float NdotH, float rough) {
     return m2 / (d*d);
 }
 
+float lambertDiffuse(vec3 light_direction, vec3 surface_norm) {
+    return max(0.0, dot(light_direction, surface_norm));
+}
+
+// returns cook-torrance power (needs to be multiplied with color/skybox)
 float cookTorranceSpecular(
-        vec3 lightDirection,
-        vec3 viewDirection,
-        vec3 surfaceNormal,
+        vec3 light_direction,
+        vec3 view_dir,
+        vec3 surface_norm,
         float roughness,
         float fresnel) {
-    float VdotN = max(dot(viewDirection, surfaceNormal), 0.0);
-    float LdotN = max(dot(lightDirection, surfaceNormal), 0.0);
+    float VdotN = max(dot(view_dir, surface_norm), 0.0);
+    float LdotN = max(dot(light_direction, surface_norm), 0.0);
 
-    //Half angle vector
-    vec3 H = normalize(lightDirection + viewDirection);
+    // Half angle vector
+    vec3 H = normalize(light_direction + view_dir);
 
-    //Geometric term
-    float NdotH = max(dot(surfaceNormal, H), 0.0);
-    float VdotH = max(dot(viewDirection, H), 0.000001);
-    float LdotH = max(dot(lightDirection, H), 0.000001);
+    // Geometric term
+    float NdotH = max(dot(surface_norm, H), 0.0);
+    float VdotH = max(dot(view_dir, H), 0.000001);
+    float LdotH = max(dot(light_direction, H), 0.000001);
     float G1 = (2.0 * NdotH * VdotN) / VdotH;
     float G2 = (2.0 * NdotH * LdotN) / LdotH;
     float G = min(1.0, min(G1, G2));
 
-    //Distribution term
+    // Distribution term
     float D = ggx(NdotH, roughness);
 
-    //Fresnel term
+    // Fresnel term
     float F = pow(1.0 - VdotN, fresnel);
 
-    //Multiply terms and done
-    return  G * F * D / max(3.14159265 * VdotN * LdotN, 0.000001);
+    // Multiply terms and done
+    return G * F * D / max(PI * VdotN * LdotN, 0.000001);
 }
 
 void main() {
-    vec3 lightDir = normalize(lightPos - v_pos);
-    vec3 eyeDir = normalize(camPos - v_pos);
-    vec3 norm = normalize(-v_normal); // i flipped the normals accidentally
-    float power = cookTorranceSpecular(lightDir, eyeDir, norm, 0.7, 0.0);
-    result = vec4(power, power, power, 1.0);
+    vec3 light_dir = normalize(light_pos - v_pos);
+    vec3 eye_dir = normalize(cam_pos - v_pos);
+    vec3 norm = normalize(v_normal);
+    float spec_power = cookTorranceSpecular(light_dir, eye_dir, norm, 0.7, 0.0);
+    float diffuse_power = lambertDiffuse(light_dir, norm);
+
+    vec3 ref_light = vec3(0); // reflected light
+    vec3 dif_light = vec3(0);
+
+    ref_light += spec_power * light_col;
+    dif_light += diffuse_power * light_col;
+
+    // TODO: add ibl
+
+    result = vec4(dif_light * mix(base, vec3(0.0), metallic) + ref_light, 1.0);
 }

@@ -163,9 +163,9 @@ int main() {
     raw_mesh_t *o = load_3ds_objs("t/monkey.3ds");
     gen_normals(&(o[0]));
 
-    float x[8711];
-    float nx[8711];
-    float bnx[8711];
+    float x[9 * o[0].plen];
+    float nx[9 * o[0].plen];
+    float bnx[9 * o[0].plen];
     size_t xn = sizeof(x) / (sizeof(float) * 3);
     float *v = x - 1;
     float *n = nx - 1;
