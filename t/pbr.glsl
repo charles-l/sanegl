@@ -8,13 +8,17 @@ in vec3 v_normal;
 in vec3 v_binormal;
 in vec3 v_pos;
 
+uniform samplerCube env;
+
 vec3 light_pos = vec3(4.0, 3.0, -3.0);
 vec3 cam_pos = vec3(4.0, 3.0, -3.0);
-vec3 light_col = vec3(0.3, 1.0, 1.0);
+vec3 light_col = vec3(1.0, 1.0, 1.0);
 vec3 base = vec3(1.0, 1.0, 1.0);
+
 out vec4 result;
 
-float metallic = 0.4;
+float metallic = 0.0;
+float roughness = 0.4;
 
 float ggx(float NdotH, float rough) {
     float m = rough * rough;
@@ -58,11 +62,19 @@ float cookTorranceSpecular(
     return G * F * D / max(PI * VdotN * LdotN, 0.000001);
 }
 
+vec3 blend_mat(vec3 diff, vec3 spec, vec3 base) {
+    float r = smoothstep(0.2, 0.45, metallic);
+    vec3 dielec = diff + spec;
+    vec3 metal = spec * base;
+    return mix(dielec, metal, r);
+}
+
 void main() {
     vec3 light_dir = normalize(light_pos - v_pos);
     vec3 eye_dir = normalize(cam_pos - v_pos);
     vec3 norm = normalize(v_normal);
-    float spec_power = cookTorranceSpecular(light_dir, eye_dir, norm, 0.7, 0.0);
+
+    float spec_power = cookTorranceSpecular(light_dir, eye_dir, norm, roughness, 0.1);
     float diffuse_power = lambertDiffuse(light_dir, norm);
 
     vec3 ref_light = vec3(0); // reflected light
@@ -73,5 +85,5 @@ void main() {
 
     // TODO: add ibl
 
-    result = vec4(dif_light * mix(base, vec3(0.0), metallic) + ref_light, 1.0);
+    result = vec4(blend_mat(dif_light, ref_light, base), 1.0);
 }

@@ -170,7 +170,6 @@ int main() {
     float *v = x - 1;
     float *n = nx - 1;
     float *bn = bnx - 1;
-    // TODO: figure out these segfaults
     for(int i = 0; i < o[0].plen; i++) {
         polygon_t p = o[0].polygons[i];
         *(++v) = o[0].vertices[p.a][0];
@@ -260,6 +259,7 @@ int main() {
         glUseProgram(p2);
 
         glUniformMatrix4fv(glGetUniformLocation(p2, "MVP"), 1, GL_FALSE, &mvp[0][0]);
+
         glDepthMask(GL_FALSE);
         glBindVertexArray(skybox.vao);
         glActiveTexture(GL_TEXTURE0);
@@ -268,12 +268,17 @@ int main() {
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glDepthMask(GL_TRUE);
 
+
         glUseProgram(p);
         glUniformMatrix4fv(glGetUniformLocation(p, "MVP"), 1, GL_FALSE, &mvp[0][0]);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, monkey_tex);
         glUniform1i(glGetUniformLocation(p, "tex"), 0);
+
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, skybox_texture);
+        glUniform1i(glGetUniformLocation(p, "env"), 0);
 
         draw_mesh(&monkey);
         glfwSwapBuffers((GLFWwindow *) w);
