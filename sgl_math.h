@@ -5,9 +5,9 @@
 #define __USE_XOPEN
 #include <math.h>
 
-typedef float v2 __attribute__ ((vector_size (8)));
-typedef float v3 __attribute__ ((vector_size (16))); // must be a power of 2 - last byte is unused
-typedef float v4 __attribute__ ((vector_size (16)));
+typedef float v2 __attribute__ ((ext_vector_type (2)));
+typedef float v3 __attribute__ ((ext_vector_type (3))); // must be a power of 2 - last byte is unused
+typedef float v4 __attribute__ ((ext_vector_type (4)));
 typedef v4 mat4x4[4];
 
 #define GEN_VECN_FUNCTIONS(n) \

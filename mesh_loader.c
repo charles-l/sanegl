@@ -50,9 +50,13 @@ raw_mesh_t *load_3ds_objs(char *fname) {
                 objs[curo].vlen = qty;
                 fprintf(stderr, "%d vertices\n", qty);
                 for(i = 0; i < qty; i++) {
-                    fread(&objs[curo].vertices[i][0], sizeof(float), 1, f);
-                    fread(&objs[curo].vertices[i][1], sizeof(float), 1, f);
-                    fread(&objs[curo].vertices[i][2], sizeof(float), 1, f);
+                    float t;
+                    fread(&t, sizeof(float), 1, f);
+                    objs[curo].vertices[i].x = t;
+                    fread(&t, sizeof(float), 1, f);
+                    objs[curo].vertices[i].y = t;
+                    fread(&t, sizeof(float), 1, f);
+                    objs[curo].vertices[i].z = t;
                 }
                 break;
             case 0x4120: // chunk faces description

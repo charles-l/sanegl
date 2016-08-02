@@ -1,9 +1,7 @@
 #include "threedee.h"
 #include "mesh_loader.h"
-#include <GL/gl.h>
+#include <assert.h>
 #include <err.h>
-#include <GL/glu.h>
-#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 #define UNPACK3(f) f[0], f[1], f[2]
@@ -44,11 +42,17 @@ void calc_mvp(mat4x4 mvp, mat4x4 model, v3 pos, v3 goal, v3 up, float fov, float
     mat4x4_mul(mvp, mvp, model);
 }
 
+void error_callback(int error, const char* description)
+{
+    fprintf(stderr, "Error: %s\n", description);
+}
+
 int main() {
 
     /////
 
-    glfwInit();
+    glfwSetErrorCallback(error_callback);
+    assert(glfwInit());
     glfwWindowHint(GLFW_SAMPLES, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -258,7 +262,7 @@ int main() {
         // skybox
         glUseProgram(p2);
 
-        glUniformMatrix4fv(glGetUniformLocation(p2, "MVP"), 1, GL_FALSE, &mvp[0][0]);
+        glUniformMatrix4fv(glGetUniformLocation(p2, "MVP"), 1, GL_FALSE, (void *) &mvp[0]);
 
         glDepthMask(GL_FALSE);
         glBindVertexArray(skybox.vao);
@@ -270,7 +274,7 @@ int main() {
 
 
         glUseProgram(p);
-        glUniformMatrix4fv(glGetUniformLocation(p, "MVP"), 1, GL_FALSE, &mvp[0][0]);
+        glUniformMatrix4fv(glGetUniformLocation(p, "MVP"), 1, GL_FALSE, (void *) &mvp[0]);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, monkey_tex);

@@ -3,8 +3,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-#define ENSURE(m, r, e, ...) if(!(m)) {fprintf(stderr, "%s:%i (" #m "): %s\n", __FILE__, __LINE__, e, ##__VA_ARGS__); r;}
-
 static void show_info_log( // "da frick is this ugly thing", you ask? welcome to opengl error reporting >:)
         GLuint object,
         PFNGLGETSHADERIVPROC glGet__iv,
@@ -23,7 +21,7 @@ static void show_info_log( // "da frick is this ugly thing", you ask? welcome to
 
 GLuint load_shader(const char *filename, int type) {
     FILE *f = fopen(filename, "r");
-    ENSURE(f, return 0, "can't load file: %s", filename);
+    assert(f);
     fseek(f, 0, SEEK_END);
     int fsize = ftell(f);
     rewind(f);
@@ -66,10 +64,9 @@ GLuint make_program(GLuint v_shader, GLuint f_shader) {
     return program;
 }
 
-// returns a GLFWwindow
 void init_threedee() {
     glewExperimental = 1;
-    ENSURE(glewInit() == GLEW_OK, return, "failed to init glew");
+    assert(glewInit() == GLEW_OK);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 }
@@ -154,7 +151,7 @@ void clear(GLfloat r, GLfloat g, GLfloat b) {
 }
 
 img_t *loadf_img(FILE *f) {
-    ENSURE(f, return NULL, "failed to load image");
+    assert(f);
     img_t *i = malloc(sizeof(img_t));
     int n;
     i->data = stbi_load_from_file(f, &(i->w), &(i->h), &n, 3);
