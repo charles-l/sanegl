@@ -190,7 +190,7 @@ img_t *loadf_img(FILE *f) {
     return i;
 }
 
-img_t *loadb_img(char *d, int len) {
+img_t *loadb_img(unsigned char *d, int len) {
     img_t *i = malloc(sizeof(img_t));
     int n;
     i->data = stbi_load_from_memory(d, len, &(i->w), &(i->h), &n, 3);

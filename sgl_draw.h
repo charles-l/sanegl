@@ -17,7 +17,7 @@ typedef struct {
 
 typedef struct {
     // Raw image data
-    char *data;
+    unsigned char *data;
     int w;
     int h;
 } img_t;
@@ -56,7 +56,7 @@ void clear(GLfloat r, GLfloat g, GLfloat b);
 img_t *loadf_img(FILE *f);
 
 // Load an image from a buffer in memory.
-img_t *loadb_img(char *d, int len);
+img_t *loadb_img(unsigned char *d, int len);
 
 // Free an image
 void free_img(img_t *i);
