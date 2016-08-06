@@ -1,8 +1,8 @@
 // The main header file for the C OpenGL wrapper.
 //
 // The API aims to remove a lot of OpenGL boilerplate to clean up code, and make development easier and faster.
-#ifndef LIB3DS_H
-#define LIB3DS_H
+#ifndef SGLDRAW_H
+#define SGLDRAW_H
 
 #include <GL/glew.h>
 #include <stdio.h>
@@ -79,4 +79,4 @@ GLuint create_vao();
 //
 GLuint create_buf(GLfloat *data, size_t size, GLuint vertex_size, GLuint attribi);
 
-#endif
+#endif // SGLDRAW_H

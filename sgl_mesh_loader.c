@@ -1,4 +1,4 @@
-#include "mesh_loader.h"
+#include "sgl_mesh_loader.h"
 #include "sgl_math.h"
 
 inline static size_t get_fsize(FILE *f) {

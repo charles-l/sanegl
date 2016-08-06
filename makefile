@@ -1,9 +1,9 @@
-OUT=libthreedee.a
+OUT=libsgl.a
 CFLAGS=-std=c99 -g -I/usr/local/include -L/usr/local/lib
 
 all:
-	cc $(CFLAGS) -c threedee.c -lm -o threedee.o
-	ar rcs $(OUT) threedee.o
+	cc $(CFLAGS) -c sgl_draw.c -lm -o sgl_draw.o
+	ar rcs $(OUT) sgl_draw.o
 
 install:
 	install $(OUT) /usr/local/lib
@@ -11,7 +11,7 @@ install:
 LDFLAGS=`pkg-config --libs glew` `pkg-config --libs glfw3` -lX11 -lglut -lm -lXrandr -lXxf86vm -lXi -lXinerama -lXcursor -lpthread
 demo:
 	-cd t && rm demo
-	cd t && cc $(CFLAGS) -o demo demo.c ../threedee.c ../mesh_loader.c -I.. $(LDFLAGS)
+	cd t && cc $(CFLAGS) -o demo demo.c ../sgl_draw.c ../sgl_mesh_loader.c -I.. $(LDFLAGS)
 
 docs:
 	pycco -d docs *.h

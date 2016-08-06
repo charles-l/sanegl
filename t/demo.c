@@ -1,5 +1,5 @@
-#include "threedee.h"
-#include "mesh_loader.h"
+#include "sgl_draw.h"
+#include "sgl_mesh_loader.h"
 #include <assert.h>
 #include <err.h>
 #include <GLFW/glfw3.h>
@@ -9,8 +9,8 @@
 // used for debug:
 #define PRINTVEC(v) printf(#v ": %f %f %f\n", UNPACK3(v));
 
-v3 dir = {0, 0, 0};
-v3 up = {0};
+v3 dir = (0);
+v3 up = (0);
 v3 position = {0, 0, 5};
 float h_angle = 3.14f;
 float v_angle = 0.0;
