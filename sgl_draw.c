@@ -118,10 +118,36 @@ void draw_mesh(mesh_t *m) {
     glBindVertexArray(0);
 }
 
-GLuint load_texi(img_t *i) { // load a texture from image data
-    GLuint tex_id;
-    glGenTextures(1, &tex_id);
-    glBindTexture(GL_TEXTURE_2D, tex_id);
+void draw_skybox(mesh_t *skybox) {
+    glDepthMask(GL_FALSE);
+    glBindVertexArray(skybox->vao);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glDepthMask(GL_TRUE);
+}
+
+tex_t load_cubemapi(img_t imgs[6]) {
+    tex_t t;
+    t.type = GL_TEXTURE_CUBE_MAP;
+    t.image = imgs;
+    glGenTextures(1, &t.id);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, t.id);
+    for(GLuint i = 0; i < 6; i++) {
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                0, GL_RGB, imgs[i].w, imgs[i].h, 0, GL_RGB, GL_UNSIGNED_BYTE, imgs[i].data);
+    }
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    glBindTexture(GL_TEXTURE_2D, 0); // unbind for next texture
+    return t;
+}
+
+tex_t load_texi(img_t *i) { // load a texture from image data
+    tex_t t;
+    t.type = GL_TEXTURE_2D;
+    t.image = i;
+    glGenTextures(1, &t.id);
+    glBindTexture(GL_TEXTURE_2D, t.id);
     glTexImage2D(GL_TEXTURE_2D,
             0,
             GL_RGB,
@@ -134,15 +160,21 @@ GLuint load_texi(img_t *i) { // load a texture from image data
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glBindTexture(GL_TEXTURE_2D, 0); // unbind for next texture
-    return tex_id;
+    return t;
 }
 
-GLuint load_tex(char *fname) { // load a texture from a filename
+tex_t load_tex(char *fname) { // load a texture from a filename
     FILE *imgf = fopen("t/tex.tga", "r");
     img_t *i = loadf_img(imgf);
     fclose(imgf);
 
     return load_texi(i);
+}
+
+void bind_tex(GLuint prog, char *uname, tex_t tex, int slot) {
+    glActiveTexture(GL_TEXTURE0 + slot);
+    glBindTexture(tex.type, tex.id);
+    glUniform1i(glGetUniformLocation(prog, uname), 0); // TODO: maybe move to `program_t` stuff once more is implemented (with multiple slots handled, etc)
 }
 
 void clear(GLfloat r, GLfloat g, GLfloat b) {

@@ -6,7 +6,7 @@
 #include <math.h>
 
 typedef float v2 __attribute__ ((ext_vector_type (2)));
-typedef float v3 __attribute__ ((ext_vector_type (3))); // must be a power of 2 - last byte is unused
+typedef float v3 __attribute__ ((ext_vector_type (3)));
 typedef float v4 __attribute__ ((ext_vector_type (4)));
 typedef v4 mat4x4[4];
 

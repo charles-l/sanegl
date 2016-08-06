@@ -152,7 +152,7 @@ int main() {
 
 
     // IMAGE DATA
-    img_t *cubemap[6];
+    img_t cubemap[6];
     for(int i = 0; i < 6; i++) {
         char name[64];
         name[0] = '\0';
@@ -160,7 +160,7 @@ int main() {
         sprintf(name, "%s%i.tga", name, i);
         puts(name);
         FILE *f = fopen(name, "r");
-        cubemap[i] = loadf_img(f);
+        cubemap[i] = *(loadf_img(f));
         fclose(f);
     }
 
@@ -224,20 +224,10 @@ int main() {
     free(o);
 
     mesh_t monkey = create_mesh(x, nx, bnx, NULL, xn);
-    GLuint monkey_tex = load_tex("t/tex.tga");
+    tex_t monkey_tex = load_tex("t/tex.tga");
 
     mesh_t skybox = create_mesh(skybox_data, skybox_data, NULL, NULL, 36);
-    GLuint skybox_texture;
-
-    glGenTextures(1, &skybox_texture);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, skybox_texture);
-    for(GLuint i = 0; i < 6; i++) {
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                0, GL_RGB, cubemap[i]->w, cubemap[i]->h, 0, GL_RGB, GL_UNSIGNED_BYTE, cubemap[i]->data);
-    }
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
+    tex_t skybox_texture = load_cubemapi(cubemap);
 
     // TODO: normal map
     // TODO: shadow map
@@ -261,29 +251,15 @@ int main() {
 
         // skybox
         glUseProgram(p2);
-
         glUniformMatrix4fv(glGetUniformLocation(p2, "MVP"), 1, GL_FALSE, (void *) &mvp[0]);
-
-        glDepthMask(GL_FALSE);
-        glBindVertexArray(skybox.vao);
-        glActiveTexture(GL_TEXTURE0);
-        glUniform1i(glGetUniformLocation(p2, "skybox"), 0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, skybox_texture);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        glDepthMask(GL_TRUE);
-
+        bind_tex(p2, "skybox", skybox_texture, 0);
+        draw_skybox(&skybox);
 
         glUseProgram(p);
         glUniformMatrix4fv(glGetUniformLocation(p, "MVP"), 1, GL_FALSE, (void *) &mvp[0]);
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, monkey_tex);
-        glUniform1i(glGetUniformLocation(p, "tex"), 0);
-
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, skybox_texture);
-        glUniform1i(glGetUniformLocation(p, "env"), 0);
-
+        bind_tex(p, "tex", monkey_tex, 0);
+        bind_tex(p, "env", skybox_texture, 1);
         draw_mesh(&monkey);
         glfwSwapBuffers((GLFWwindow *) w);
     } while (glfwGetKey(w, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(w) == 0);

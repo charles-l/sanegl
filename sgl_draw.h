@@ -22,6 +22,12 @@ typedef struct {
     int h;
 } img_t;
 
+typedef struct {
+    GLuint id;
+    GLenum type;
+    img_t *image;
+} tex_t;
+
 // Create an OpenGL shader from a string and return the shader id.
 GLuint load_shader(const char *s, int type);
 
@@ -32,10 +38,13 @@ GLuint make_program(GLuint v_shader, GLuint f_shader);
 void init_threedee();
 
 // Create a texture buffer from image data
-GLuint load_texi(img_t *i);
+tex_t load_texi(img_t *i);
 
-// Create a texture buffer from a filename
-GLuint load_tex(char *filename);
+// Create a texture buffer from file
+tex_t load_tex(char *filename);
+
+// create a texture buffer from cubemap image data
+tex_t load_cubemapi(img_t imgs[6]);
 
 // Draw an object from a VAO
 void draw_vao(GLuint vao, unsigned int len);
@@ -61,8 +70,11 @@ void free_img(img_t *i);
 // * `location = 3` - `vec2` vertex uv coordinates
 mesh_t create_mesh(float *vertices, float *normals, float *binormals, float *uvs, size_t vn);
 
-// Draw a mesh
 void draw_mesh(mesh_t *m);
+
+void draw_skybox(mesh_t *skybox);
+
+void bind_tex(GLuint prog, char *uname, tex_t tex, int slot);
 
 // ** Low Level Functionality **
 // This stuff is used internally, but exposed in case you need/want low-level control
