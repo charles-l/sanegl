@@ -68,6 +68,8 @@ void init_threedee() {
     glewExperimental = 1;
     assert(glewInit() == GLEW_OK);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
     glDepthFunc(GL_LESS);
 }
 
@@ -135,8 +137,9 @@ tex_t load_cubemapi(img_t imgs[6]) {
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
                 0, GL_RGB, imgs[i].w, imgs[i].h, 0, GL_RGB, GL_UNSIGNED_BYTE, imgs[i].data);
     }
+    glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
     glBindTexture(GL_TEXTURE_2D, 0); // unbind for next texture
     return t;

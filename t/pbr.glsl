@@ -2,6 +2,7 @@
 precision highp float; //set default precision in glsl es 2.0
 
 #define PI 3.141592653
+#define MAXMIP 10
 
 in vec2 v_texcoord;
 in vec3 v_normal;
@@ -83,7 +84,7 @@ void main() {
     ref_light += spec_power * light_col;
     dif_light += diffuse_power * light_col;
 
-    // TODO: add ibl
+    dif_light = texture(env, norm, MAXMIP).rgb * (1.0 / PI);
 
     result = vec4(blend_mat(dif_light, ref_light, base), 1.0);
 }

@@ -237,6 +237,7 @@ int main() {
     mat4x4 model = {0};
     mat4x4_diag(model, 1.f);
 
+    v3 pos = (v3){4.f, 3.f, -3.f};
     double dt;
     double last_time = 0;
     mat4x4 mvp;
@@ -245,7 +246,9 @@ int main() {
         printf("%fms\n", dt * 1000);
         last_time = glfwGetTime(); // set last time
 
-        calc_mvp(mvp, model, (v3){4,3,-3}, (v3){0,0,0}, (v3){0,1,0}, 45.f, width, height);
+        pos.x = sin(glfwGetTime());
+        pos.y = sin(glfwGetTime());
+        calc_mvp(mvp, model, pos, (v3){0,0,0}, (v3){0,1,0}, 45.f, width, height);
 
         clear(0.0, 0.1, 0.3);
 
