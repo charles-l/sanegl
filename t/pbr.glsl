@@ -2,7 +2,7 @@
 precision highp float; //set default precision in glsl es 2.0
 
 #define PI 3.141592653
-#define MAXMIP 10
+#define MAXBIAS 10
 
 in vec2 v_texcoord;
 in vec3 v_normal;
@@ -12,14 +12,14 @@ in vec3 v_pos;
 uniform samplerCube env;
 uniform vec3 cam_pos;
 
-vec3 light_pos = vec3(4.0, 3.0, -3.0);
+vec3 light_pos = vec3(50.0, 3.0, -3.0);
 vec3 light_col = vec3(1.0, 1.0, 1.0);
-vec3 base = vec3(1.0, 1.0, 1.0);
+vec3 base = vec3(1.0, 0.0, 1.0);
 
 out vec4 result;
 
 float metallic = 0.0;
-float roughness = 0.4;
+float roughness = 0.0;
 
 float ggx(float NdotH, float rough) {
     float m = rough * rough;
@@ -81,11 +81,11 @@ void main() {
     vec3 ref_light = vec3(0); // reflected light
     vec3 dif_light = vec3(0);
 
-    //ref_light += spec_power * light_col;
-    //dif_light += diffuse_power * light_col;
+    dif_light += texture(env, norm, MAXBIAS).rgb * (1.0 / PI);
+    //ref_light += texture(env, reflect(-eye_dir, norm), roughness * MAXBIAS).rgb;
 
-    dif_light = texture(env, norm, MAXMIP).rgb * (1.0 / PI);
-    ref_light = texture(env, reflect(-eye_dir, norm), 2).rgb;
+    dif_light += diffuse_power * light_col;
+    //ref_light += spec_power * light_col;
 
     result = vec4(blend_mat(dif_light, ref_light, base), 1.0);
 }
