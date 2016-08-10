@@ -246,8 +246,8 @@ int main() {
         printf("%fms\n", dt * 1000);
         last_time = glfwGetTime(); // set last time
 
-        pos.x = sin(glfwGetTime());
-        pos.y = sin(glfwGetTime());
+        pos.x = sin(glfwGetTime()) * 5;
+        pos.y = sin(glfwGetTime() * 0.5 + 1) * 5;
         calc_mvp(mvp, model, pos, (v3){0,0,0}, (v3){0,1,0}, 45.f, width, height);
 
         clear(0.0, 0.1, 0.3);
@@ -260,6 +260,7 @@ int main() {
 
         glUseProgram(p);
         glUniformMatrix4fv(glGetUniformLocation(p, "MVP"), 1, GL_FALSE, (void *) &mvp[0]);
+        glUniform3f(glGetUniformLocation(p, "cam_pos"), pos.x, pos.y, pos.z);
 
         bind_tex(p, "tex", monkey_tex, 0);
         bind_tex(p, "env", skybox_texture, 1);

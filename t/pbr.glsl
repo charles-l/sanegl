@@ -10,9 +10,9 @@ in vec3 v_binormal;
 in vec3 v_pos;
 
 uniform samplerCube env;
+uniform vec3 cam_pos;
 
 vec3 light_pos = vec3(4.0, 3.0, -3.0);
-vec3 cam_pos = vec3(4.0, 3.0, -3.0);
 vec3 light_col = vec3(1.0, 1.0, 1.0);
 vec3 base = vec3(1.0, 1.0, 1.0);
 
@@ -81,10 +81,11 @@ void main() {
     vec3 ref_light = vec3(0); // reflected light
     vec3 dif_light = vec3(0);
 
-    ref_light += spec_power * light_col;
-    dif_light += diffuse_power * light_col;
+    //ref_light += spec_power * light_col;
+    //dif_light += diffuse_power * light_col;
 
     dif_light = texture(env, norm, MAXMIP).rgb * (1.0 / PI);
+    ref_light = texture(env, reflect(-eye_dir, norm), 2).rgb;
 
     result = vec4(blend_mat(dif_light, ref_light, base), 1.0);
 }
