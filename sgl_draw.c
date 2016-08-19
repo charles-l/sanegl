@@ -175,6 +175,14 @@ tex_t load_tex(char *fname) { // load a texture from a filename
     return load_texi(i);
 }
 
+void bind_mat4x4(GLuint prog, char *uname, void *data) {
+    glUniformMatrix4fv(glGetUniformLocation(prog, uname), 1, GL_FALSE, data);
+}
+
+void bind_v3(GLuint prog, char *uname, float *data) {
+    glUniform3f(glGetUniformLocation(prog, uname), data[0], data[1], data[2]);
+}
+
 void bind_tex(GLuint prog, char *uname, tex_t tex, int slot) {
     _bind_tex(prog, uname, tex.type, tex.id, slot);
 }

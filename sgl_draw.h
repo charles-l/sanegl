@@ -35,7 +35,7 @@ GLuint load_shader(const char *s, int type);
 GLuint make_program(GLuint v_shader, GLuint f_shader);
 
 // Initialize the OpenGL scene (assuming a context has been created)
-void init_threedee();
+void init_sgl();
 
 // Create a texture buffer from image data
 tex_t load_texi(img_t *i);
@@ -73,6 +73,9 @@ void draw_mesh(mesh_t *m);
 
 void draw_skybox(mesh_t *skybox);
 
+// bind things to program uniforms
+void bind_mat4x4(GLuint prog, char *uname, void *data);
+void bind_v3(GLuint prog, char *uname, float *data);
 void bind_tex(GLuint prog, char *uname, tex_t tex, int slot);
 
 // ** Low Level Functionality **

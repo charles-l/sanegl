@@ -21,14 +21,6 @@ float mouse_speed = 0.005f;
 int width = 800;
 int height = 600;
 
-struct materal_t {
-    GLuint prog;
-    float reflectivity;
-    float diffuse;
-    float roughness;
-    float fresnal;
-};
-
 void calc_mvp(mat4x4 mvp, mat4x4 model, v3 pos, v3 goal, v3 up, float fov, float width, float height) {
     // this horrible mess is what makes objects move in 3D space. Hoorah. CAN YOU FEEL THE MATH YET?!!!
     mat4x4 proj;
@@ -42,15 +34,11 @@ void calc_mvp(mat4x4 mvp, mat4x4 model, v3 pos, v3 goal, v3 up, float fov, float
     mat4x4_mul(mvp, mvp, model);
 }
 
-void error_callback(int error, const char* description)
-{
+void error_callback(int error, const char* description) {
     fprintf(stderr, "Error: %s\n", description);
 }
 
-int main() {
-
-    /////
-
+GLFWwindow *glfw_init() {
     glfwSetErrorCallback(error_callback);
     assert(glfwInit());
     glfwWindowHint(GLFW_SAMPLES, 4);
@@ -60,50 +48,18 @@ int main() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     GLFWwindow *w = glfwCreateWindow(width, height, "game", NULL, NULL);
     glfwMakeContextCurrent(w);
+    return w;
+}
+
+int main() {
+    GLFWwindow *w = glfw_init();
+    /////
+
     init_sgl(width, height);
 
     ////
 
     // MODELS
-
-    GLfloat box_uv[] = {
-        0.000059f, 1.0f-0.000004f,
-        0.000103f, 1.0f-0.336048f,
-        0.335973f, 1.0f-0.335903f,
-        1.000023f, 1.0f-0.000013f,
-        0.667979f, 1.0f-0.335851f,
-        0.999958f, 1.0f-0.336064f,
-        0.667979f, 1.0f-0.335851f,
-        0.336024f, 1.0f-0.671877f,
-        0.667969f, 1.0f-0.671889f,
-        1.000023f, 1.0f-0.000013f,
-        0.668104f, 1.0f-0.000013f,
-        0.667979f, 1.0f-0.335851f,
-        0.000059f, 1.0f-0.000004f,
-        0.335973f, 1.0f-0.335903f,
-        0.336098f, 1.0f-0.000071f,
-        0.667979f, 1.0f-0.335851f,
-        0.335973f, 1.0f-0.335903f,
-        0.336024f, 1.0f-0.671877f,
-        1.000004f, 1.0f-0.671847f,
-        0.999958f, 1.0f-0.336064f,
-        0.667979f, 1.0f-0.335851f,
-        0.668104f, 1.0f-0.000013f,
-        0.335973f, 1.0f-0.335903f,
-        0.667979f, 1.0f-0.335851f,
-        0.335973f, 1.0f-0.335903f,
-        0.668104f, 1.0f-0.000013f,
-        0.336098f, 1.0f-0.000071f,
-        0.000103f, 1.0f-0.336048f,
-        0.000004f, 1.0f-0.671870f,
-        0.336024f, 1.0f-0.671877f,
-        0.000103f, 1.0f-0.336048f,
-        0.336024f, 1.0f-0.671877f,
-        0.335973f, 1.0f-0.335903f,
-        0.667969f, 1.0f-0.671889f,
-        1.000004f, 1.0f-0.671847f,
-        0.667979f, 1.0f-0.335851f
-    };
 
     GLfloat skybox_data[] = {
         // Positions
@@ -172,6 +128,7 @@ int main() {
     size_t xn = sizeof(x) / (sizeof(float) * 3);
     float *v = x - 1;
     float *n = nx - 1;
+    // TODO: use vbo indexing for this
     for(int i = 0; i < o[0].plen; i++) {
         polygon_t p = o[0].polygons[i];
         *(++v) = o[0].vertices[p.a][0];
@@ -240,13 +197,13 @@ int main() {
         // RENDER PASS //
         // skybox
         glUseProgram(skybox_p);
-        glUniformMatrix4fv(glGetUniformLocation(skybox_p, "MVP"), 1, GL_FALSE, (void *) &mvp[0]);
+        glUniformMatrix4fv(glGetUniformLocation(skybox_p, "MVP"), 1, GL_FALSE, (void *) &mvp);
         bind_tex(skybox_p, "skybox", skybox_texture, 0);
         draw_skybox(&skybox);
 
         glUseProgram(p);
-        glUniformMatrix4fv(glGetUniformLocation(p, "MVP"), 1, GL_FALSE, (void *) &mvp[0]);
-        glUniform3f(glGetUniformLocation(p, "cam_pos"), pos.x, pos.y, pos.z);
+        bind_mat4x4(p, "MVP", (void *) &mvp);
+        bind_v3(p, "cam_pos", (float *) &pos);
 
         bind_tex(p, "tex", monkey_tex, 0);
         bind_tex(p, "env", skybox_texture, 1);
