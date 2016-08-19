@@ -66,9 +66,8 @@ void free_img(img_t *i);
 //
 // * `location = 0` - `vec3` vertex position
 // * `location = 1` - `vec3` vertex normal
-// * `location = 2` - `vec3` vertex binormal
-// * `location = 3` - `vec2` vertex uv coordinates
-mesh_t create_mesh(float *vertices, float *normals, float *binormals, float *uvs, size_t vn);
+// * `location = 2` - `vec2` vertex uv coordinates
+mesh_t create_mesh(float *vertices, float *normals, float *uvs, size_t vn);
 
 void draw_mesh(mesh_t *m);
 

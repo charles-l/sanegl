@@ -3,6 +3,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+void _bind_tex(GLuint prog, char *uname, GLenum type, GLuint id, int slot);
+
 static void show_info_log( // "da frick is this ugly thing", you ask? welcome to opengl error reporting >:)
         GLuint object,
         PFNGLGETSHADERIVPROC glGet__iv,
@@ -64,7 +66,7 @@ GLuint make_program(GLuint v_shader, GLuint f_shader) {
     return program;
 }
 
-void init_threedee() {
+void init_sgl() {
     glewExperimental = 1;
     assert(glewInit() == GLEW_OK);
     glEnable(GL_DEPTH_TEST);
@@ -73,14 +75,13 @@ void init_threedee() {
     glDepthFunc(GL_LESS);
 }
 
-mesh_t create_mesh(float *vertices, float *normals, float *binormals, float *uvs, size_t vn) {
+mesh_t create_mesh(float *vertices, float *normals, float *uvs, size_t vn) {
     mesh_t r;
     r.vn = vn;
     r.vao = create_vao();
     GLuint v = 0, n = 0, u = 0, bn = 0;
     v = create_buf(vertices, 3 * vn * sizeof(float), 3, 0);
     if(normals) n = create_buf(normals, 3 * vn * sizeof(float), 3, 1);
-    if(binormals) bn = create_buf(binormals, 3 * vn * sizeof(float), 3, 2);
     if(uvs) u = create_buf(uvs, 2 * vn * sizeof(float), 2, 3);
     glBindVertexArray(0);
     glDeleteBuffers(1, &v); // cleanup i guess. i actually have no idea if this speeds things up. MY COPY PASTA IS SHOWING!
@@ -175,8 +176,12 @@ tex_t load_tex(char *fname) { // load a texture from a filename
 }
 
 void bind_tex(GLuint prog, char *uname, tex_t tex, int slot) {
+    _bind_tex(prog, uname, tex.type, tex.id, slot);
+}
+
+void _bind_tex(GLuint prog, char *uname, GLenum type, GLuint id, int slot) {
     glActiveTexture(GL_TEXTURE0 + slot);
-    glBindTexture(tex.type, tex.id);
+    glBindTexture(type, id);
     glUniform1i(glGetUniformLocation(prog, uname), 0); // TODO: maybe move to `program_t` stuff once more is implemented (with multiple slots handled, etc)
 }
 

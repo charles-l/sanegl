@@ -60,7 +60,7 @@ int main() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     GLFWwindow *w = glfwCreateWindow(width, height, "game", NULL, NULL);
     glfwMakeContextCurrent(w);
-    init_threedee(width, height);
+    init_sgl(width, height);
 
     ////
 
@@ -164,16 +164,14 @@ int main() {
         fclose(f);
     }
 
-    raw_mesh_t *o = load_3ds_objs("t/monkey.3ds");
+    raw_mesh_t *o = load_3ds_objs("t/monkey1.3ds");
     gen_normals(&(o[0]));
 
     float x[9 * o[0].plen];
     float nx[9 * o[0].plen];
-    float bnx[9 * o[0].plen];
     size_t xn = sizeof(x) / (sizeof(float) * 3);
     float *v = x - 1;
     float *n = nx - 1;
-    float *bn = bnx - 1;
     for(int i = 0; i < o[0].plen; i++) {
         polygon_t p = o[0].polygons[i];
         *(++v) = o[0].vertices[p.a][0];
@@ -202,37 +200,22 @@ int main() {
         *(++n) = o[0].normals[p.c][1];
         *(++n) = o[0].normals[p.c][2];
 
-        ///
-
-        *(++bn) = o[0].binormals[p.a][0];
-        *(++bn) = o[0].binormals[p.a][1];
-        *(++bn) = o[0].binormals[p.a][2];
-
-        *(++bn) = o[0].binormals[p.b][0];
-        *(++bn) = o[0].binormals[p.b][1];
-        *(++bn) = o[0].binormals[p.b][2];
-
-        *(++bn) = o[0].binormals[p.c][0];
-        *(++bn) = o[0].binormals[p.c][1];
-        *(++bn) = o[0].binormals[p.c][2];
-
-        //printf("%i: p.a %f %f %f\n", i, UNPACK3(o[0].normals[p.a]));
-        //printf("%i: p.b %f %f %f\n", i, UNPACK3(o[0].normals[p.b]));
-        //printf("%i: p.c %f %f %f\n", i, UNPACK3(o[0].normals[p.c]));
     }
 
     free(o);
 
-    mesh_t monkey = create_mesh(x, nx, bnx, NULL, xn);
+    mesh_t monkey = create_mesh(x, nx, NULL, xn);
     tex_t monkey_tex = load_tex("t/tex.tga");
 
-    mesh_t skybox = create_mesh(skybox_data, skybox_data, NULL, NULL, 36);
+    mesh_t skybox = create_mesh(skybox_data, skybox_data, NULL, 36);
     tex_t skybox_texture = load_cubemapi(cubemap);
 
     // TODO: normal map
     // TODO: shadow map
-    GLuint p = make_program(load_shader("t/v_shader.glsl", GL_VERTEX_SHADER), load_shader("t/pbr.glsl", GL_FRAGMENT_SHADER));
-    GLuint p2 = make_program(load_shader("t/v_skybox.glsl", GL_VERTEX_SHADER), load_shader("t/skybox.glsl", GL_FRAGMENT_SHADER));
+    GLuint p = make_program(load_shader("t/v_shader.glsl", GL_VERTEX_SHADER),
+            load_shader("t/simple.glsl", GL_FRAGMENT_SHADER));
+    GLuint skybox_p = make_program(load_shader("t/v_skybox.glsl", GL_VERTEX_SHADER),
+            load_shader("t/skybox.glsl", GL_FRAGMENT_SHADER));
 
     mat4x4 model = {0};
     mat4x4_diag(model, 1.f);
@@ -241,6 +224,7 @@ int main() {
     double dt;
     double last_time = 0;
     mat4x4 mvp;
+    mat4x4 light_mvp;
     do {
         dt = glfwGetTime() - last_time;
         printf("%fms\n", dt * 1000);
@@ -249,13 +233,15 @@ int main() {
         pos.x = sin(glfwGetTime()) * 5;
         pos.y = sin(glfwGetTime() * 0.5 + 1) * 5;
         calc_mvp(mvp, model, pos, (v3){0,0,0}, (v3){0,1,0}, 45.f, width, height);
+        ////////////////
 
         clear(0.0, 0.1, 0.3);
 
+        // RENDER PASS //
         // skybox
-        glUseProgram(p2);
-        glUniformMatrix4fv(glGetUniformLocation(p2, "MVP"), 1, GL_FALSE, (void *) &mvp[0]);
-        bind_tex(p2, "skybox", skybox_texture, 0);
+        glUseProgram(skybox_p);
+        glUniformMatrix4fv(glGetUniformLocation(skybox_p, "MVP"), 1, GL_FALSE, (void *) &mvp[0]);
+        bind_tex(skybox_p, "skybox", skybox_texture, 0);
         draw_skybox(&skybox);
 
         glUseProgram(p);
@@ -264,6 +250,7 @@ int main() {
 
         bind_tex(p, "tex", monkey_tex, 0);
         bind_tex(p, "env", skybox_texture, 1);
+
         draw_mesh(&monkey);
         glfwSwapBuffers((GLFWwindow *) w);
     } while (glfwGetKey(w, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(w) == 0);

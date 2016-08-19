@@ -18,7 +18,6 @@ precision highp float; //set default precision in glsl es 2.0
 
 in vec2 v_texcoord;
 in vec3 v_normal;
-in vec3 v_binormal;
 in vec3 v_pos;
 
 uniform samplerCube env;
@@ -26,12 +25,12 @@ uniform vec3 cam_pos;
 
 vec3 light_pos = vec3(50.0, 3.0, -3.0);
 vec3 light_col = vec3(1.0, 1.0, 1.0);
-vec3 base = vec3(1.0, 0.0, 1.0);
+vec3 base = vec3(1.0, 1.0, 1.0);
 
 out vec4 result;
 
-float i_metallic = 0.1;
-float roughness = 0.4;
+float i_metallic = 0.4;
+float roughness = 0.1;
 
 float pow2(float n) {
     return pow(n, 2);
@@ -152,5 +151,5 @@ void main() {
     vec3 spec = radiance(norm, view_dir, m);
     vec3 diff = diffuse_brdf(base) * texture(env, norm, MAXBIAS).rgb;
 
-    result = vec4(spec, 1.0); //vec4(blend(base * diff, light_col * spec, base, m), 1.0);
+    result = vec4(blend(diff, spec, base, m), 1.0);
 }
