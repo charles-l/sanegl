@@ -120,7 +120,7 @@ int main() {
         fclose(f);
     }
 
-    raw_mesh_t *o = load_3ds_objs("t/monkey1.3ds");
+    raw_mesh_t *o = load_3ds_objs("t/monkey.3ds");
     gen_normals(&(o[0]));
 
     float x[9 * o[0].plen];
