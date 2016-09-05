@@ -22,7 +22,6 @@ int width = 800;
 int height = 600;
 
 void calc_mvp(mat4x4 mvp, mat4x4 model, v3 pos, v3 goal, v3 up, float fov, float width, float height) {
-    // this horrible mess is what makes objects move in 3D space. Hoorah. CAN YOU FEEL THE MATH YET?!!!
     mat4x4 proj;
     mat4x4 view;
     mat4x4_perspective(proj, radians(fov), width / height, 0.1f, 100.0f);
@@ -53,11 +52,7 @@ GLFWwindow *glfw_init() {
 
 int main() {
     GLFWwindow *w = glfw_init();
-    /////
-
-    init_sgl(width, height);
-
-    ////
+    init_sgl(width, height); // assumes a context has already been made
 
     // MODELS
 
@@ -120,7 +115,7 @@ int main() {
         fclose(f);
     }
 
-    raw_mesh_t *o = load_3ds_objs("t/monkey.3ds");
+    mesh_t *o = load_3ds_objs("t/monkey.3ds");
     gen_normals(&(o[0]));
 
     float x[9 * o[0].plen];
@@ -161,10 +156,10 @@ int main() {
 
     free(o);
 
-    mesh_t monkey = create_mesh(x, nx, NULL, xn);
+    gl_mesh_t monkey = create_gl_mesh(x, nx, NULL, xn);
     tex_t monkey_tex = load_tex("t/tex.tga");
 
-    mesh_t skybox = create_mesh(skybox_data, skybox_data, NULL, 36);
+    gl_mesh_t skybox = create_gl_mesh(skybox_data, skybox_data, NULL, 36);
     tex_t skybox_texture = load_cubemapi(cubemap);
 
     // TODO: normal map

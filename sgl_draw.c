@@ -75,8 +75,8 @@ void init_sgl() {
     glDepthFunc(GL_LESS);
 }
 
-mesh_t create_mesh(float *vertices, float *normals, float *uvs, size_t vn) {
-    mesh_t r;
+gl_mesh_t create_gl_mesh(float *vertices, float *normals, float *uvs, size_t vn) {
+    gl_mesh_t r;
     r.vn = vn;
     r.vao = create_vao();
     GLuint v = 0, n = 0, u = 0, bn = 0;
@@ -115,13 +115,13 @@ GLuint create_buf(GLfloat *data, size_t size, GLuint vertex_size, GLuint attribi
     return vb;
 }
 
-void draw_mesh(mesh_t *m) {
+void draw_mesh(gl_mesh_t *m) {
     glBindVertexArray(m->vao);
     glDrawArrays(GL_TRIANGLES, 0, m->vn);
     glBindVertexArray(0);
 }
 
-void draw_skybox(mesh_t *skybox) {
+void draw_skybox(gl_mesh_t *skybox) {
     glDepthMask(GL_FALSE);
     glBindVertexArray(skybox->vao);
     glDrawArrays(GL_TRIANGLES, 0, 36);

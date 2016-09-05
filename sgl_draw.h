@@ -13,7 +13,7 @@
 typedef struct {
     GLuint vao;
     size_t vn; // number of vertices
-} mesh_t;
+} gl_mesh_t;
 
 typedef struct {
     // Raw image data
@@ -67,11 +67,11 @@ void free_img(img_t *i);
 // * `location = 0` - `vec3` vertex position
 // * `location = 1` - `vec3` vertex normal
 // * `location = 2` - `vec2` vertex uv coordinates
-mesh_t create_mesh(float *vertices, float *normals, float *uvs, size_t vn);
+gl_mesh_t create_gl_mesh(float *vertices, float *normals, float *uvs, size_t vn);
 
-void draw_mesh(mesh_t *m);
+void draw_mesh(gl_mesh_t *m);
 
-void draw_skybox(mesh_t *skybox);
+void draw_skybox(gl_mesh_t *skybox);
 
 // bind things to program uniforms
 void bind_mat4x4(GLuint prog, char *uname, void *data);

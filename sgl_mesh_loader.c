@@ -8,14 +8,14 @@ inline static size_t get_fsize(FILE *f) {
     return fsize;
 }
 
-raw_mesh_t *load_3ds_objs(char *fname) {
+mesh_t *load_3ds_objs(char *fname) {
     FILE *f;
     unsigned short chunk_id;
     unsigned int chunk_len;
     unsigned short qty;
     unsigned short face_flags;
     if((f = fopen(fname, "rb")) == NULL) return NULL;
-    raw_mesh_t *objs = calloc(MAX_OBJS, sizeof(raw_mesh_t));
+    mesh_t *objs = calloc(MAX_OBJS, sizeof(mesh_t));
 
     int curo = -1;
 
@@ -85,7 +85,7 @@ raw_mesh_t *load_3ds_objs(char *fname) {
     return objs;
 }
 
-void gen_normals(raw_mesh_t *m) {
+void gen_normals(mesh_t *m) {
     for(int i = 0; i < m->plen; i++) {
         polygon_t *p = &(m->polygons[i]);
         v3 u = (v3) m->vertices[p->a] - (v3) m->vertices[p->b];
