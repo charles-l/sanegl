@@ -205,6 +205,7 @@ int main() {
 
         draw_mesh(&monkey);
         glfwSwapBuffers((GLFWwindow *) w);
+        glfwPollEvents();
     } while (glfwGetKey(w, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(w) == 0);
     return 0;
 }
